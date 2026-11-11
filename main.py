@@ -9,7 +9,7 @@ class MainApp(ctk.CTk) :
     def __init__(self) :
         # Initialiser la fenêtre principale
         super().__init__()
-        self.title("Gestionnaire de remonte-pente mécanique")
+        self.title("ELEVATE - Comparateur de remontée mécanique")
         self.geometry("1200x700")
 
         # Initialiser, en privé, le Chairlift courant
