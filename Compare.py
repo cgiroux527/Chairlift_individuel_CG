@@ -41,3 +41,8 @@ class Compare(ctk.CTkFrame) :
 
     def importer(self, df) :
         print(df.loc[:10, ["duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]])
+
+
+#TODO 
+        #self.compare = Compare(self)
+        #self.compare.grid(row=3, column=1)
