@@ -4,6 +4,8 @@ from GraphControl import GraphControl
 
 import customtkinter as ctk
 
+from Compare import Compare
+
 class MainApp(ctk.CTk) :
 
     def __init__(self) :
@@ -23,6 +25,9 @@ class MainApp(ctk.CTk) :
         # Initialiser la frame du Graphique
         self.graph = GraphControl(self, self.__chairlift)
         self.graph.grid(row=0, column=1, sticky="nsew", padx=12, pady=12)
+
+        self.compare = Compare(self)
+        self.compare.grid(row=3, column=1)
 
         # Affichage du label du nombre de personnes par heure avec les paramètres courants.
         self.label_nb_personne = ctk.CTkLabel(self, bg_color="white", text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()), text_color="black")

@@ -5,11 +5,11 @@ from tkinter import filedialog
 
 from Chairlift import Chairlift
 
-class Compare(ctk.CtkFrame) :
+class Compare(ctk.CTkFrame) :
 
     def __init__(self, parent) :
 
-        super.__init__(parent)
+        super().__init__(parent)
 
         self.chairlift_1 = Chairlift()
         self.chairlift_2 = Chairlift()
