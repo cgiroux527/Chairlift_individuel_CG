@@ -40,7 +40,22 @@ class Compare(ctk.CTkFrame) :
 
 
     def importer(self, df) :
-        print(df.loc[:10, ["duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]])
+        df = pd.read_csv("lifts.csv")
+
+        df = df.drop_duplicates()
+
+        df = df.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
+
+        df = df.dropna()
+
+        condition_vitesse = (df["speed_m_per_s"] >= 1.0) & (df["speed_m_per_s"] <= 10.0)
+        df = df[condition_vitesse]
+
+        #FILTRER LE CHOIX
+
+        df = df.reset_index(drop=True)
+
+        
 
 
 #TODO 
