@@ -6,7 +6,7 @@ import pandas as pd
 from Chairlift import Chairlift
 
 
-NOMBRE_ROWS_PAR_LIFT = 5
+NOMBRE_ROWS_PAR_LIFT = 6
 NOMBRE_COMPARER = 2
 
 
@@ -49,8 +49,7 @@ class Compare(ctk.CTkFrame) :
                 self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
                 self.bouton_donnee.grid(row=1, column=0)
 
-            self.radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
-            self.radio_choix_perso.grid(row=2, column=0)
+            
             
             nombre_lifts += 1"""
         
@@ -64,9 +63,12 @@ class Compare(ctk.CTkFrame) :
         label_lift = ctk.CTkLabel(frame_lift, text= f"Chairlift #{numero}", font=("Arial", 20, "bold"))
         label_lift.grid(row=0, column=0)
 
-
         self.radio_buttons_csv.append(ctk.CTkRadioButton(frame_lift, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_vars[numero-1], value=numero, state="disabled"))
         self.radio_buttons_csv[numero-1].grid(row=1, column=0)
+
+        radio_choix_perso = ctk.CTkRadioButton(frame_lift, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_vars[numero-1], value=numero)
+        radio_choix_perso.grid(row=2, column=0)
+
         
     def changer_etat_csv(self) :
         for i in range(NOMBRE_COMPARER) :
@@ -74,6 +76,7 @@ class Compare(ctk.CTkFrame) :
 
     def quand_choix_csv(self) :
         print("options menu csv")
+        #TODO utiliser radio var pour savoir lequel doit etre disabled
         #les options menu du csv avec pandas
             #choix pays
                 #choix region 
@@ -118,8 +121,3 @@ class Compare(ctk.CTkFrame) :
         df = df.reset_index(drop=True)
 
         
-
-
-#TODO 
-        #self.compare = Compare(self)
-        #self.compare.grid(row=3, column=1)
