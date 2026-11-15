@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import pandas as pd
 
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 from Chairlift import Chairlift
 
@@ -36,6 +36,7 @@ class Compare(ctk.CTkFrame) :
                 self.importer(df_lecture)
 
             except (OSError, ValueError, KeyError) as erreur:
+                messagebox.showerror("Erreur", erreur)
                 print("Chargement impossible :", erreur)
 
 
