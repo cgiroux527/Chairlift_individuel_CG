@@ -4,7 +4,6 @@ from GraphControl import GraphControl
 
 import customtkinter as ctk
 
-from Compare import Compare
 
 class MainApp(ctk.CTk) :
 
@@ -14,48 +13,28 @@ class MainApp(ctk.CTk) :
         self.title("ELEVATE - Comparateur de remontée mécanique")
         self.geometry("1200x700")
 
-        # Initialiser, en privé, le Chairlift courant
-        self.__chairlift = Chairlift()
+        self.afficher_menu_principal()
 
-        # Initialiser la frame des sliders et autres boutons
-        self.grid_rowconfigure(0, weight=1)
-        self.sliders = Sliders(self, self.__chairlift, self.mettre_a_jour)
-        self.sliders.grid(row=0, column=0, rowspan=3, sticky="nsew", padx=12, pady=12)
+    def detruire_frame(self):
+        for widget in self.winfo_children():
+            widget.destroy()
 
-        # Initialiser la frame du Graphique
-        self.graph = GraphControl(self, self.__chairlift)
-        self.graph.grid(row=0, column=1, sticky="nsew", padx=12, pady=12)
-
-        # Affichage du label du nombre de personnes par heure avec les paramètres courants.
-        self.label_nb_personne = ctk.CTkLabel(self, bg_color="white", text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()), text_color="black")
-        self.label_nb_personne.grid(row=1, column=1, sticky="nsew", padx=10, pady=(0,12))
-        # Bouton de rafraichissement
-        self.bouton_rafraichissement = ctk.CTkButton(self, text="Recalculer", command=self._rafraichissement)
-        self.bouton_rafraichissement.grid(row=2, column=1, sticky="nsew", padx=12, pady=(3,12))
-
-        # Modifier le poids des différentes colonnes
-        self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=1)
-        #Configurer les rows du grid
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=0)
-        self.grid_rowconfigure(2, weight=0)
-
-        # Appeler mettre à jour qui met à jour l'image/le graph
-        self.mettre_a_jour()
-
-    # Mettre à jour le graphique 
-    def mettre_a_jour(self):
-        self.graph.mise_a_jour_image()
+    def afficher_menu_principal(self) :
+        #Appeler instance du menu
         
-        self.label_nb_personne.configure(text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()))
+    def afficher_createur(self) :
+        #Appeler instance du createur
 
-    # Commande du bouton de rafraichissement qui recalcule et déselectionne
-    def _rafraichissement(self) :
-        self.sliders.reset_radio_var()
-        
-        self.label_nb_personne.configure(text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()))
+    def afficher_comparer(self) :
+        #Appeler instance du comparateur
+    
+    def changer_page(self, choix) :
+        self.detruire_frame()
 
+        self.page_courante = choix(self)
+        self.page_courante.pack(fill="both")
+
+    
 #Loop du MainApp et choix de l'apparence du ctk
 if __name__ == "__main__" :
     ctk.set_appearance_mode("system")
