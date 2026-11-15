@@ -7,6 +7,7 @@ from Chairlift import Chairlift
 
 
 NOMBRE_ROWS_PAR_LIFT = 5
+NOMBRE_COMPARER = 2
 
 
 class Compare(ctk.CTkFrame) :
@@ -29,7 +30,7 @@ class Compare(ctk.CTkFrame) :
         self.creer_choix_lift(1) 
         self.creer_choix_lift(2)
 
-        nombre_lifts = 1
+    """nombre_lifts = 1
         while nombre_lifts < 3 :
             
 
@@ -46,11 +47,17 @@ class Compare(ctk.CTkFrame) :
             self.radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
             self.radio_choix_perso.grid(row=2, column=0)
             
-            nombre_lifts += 1
+            nombre_lifts += 1"""
+        
 
     def creer_choix_lift(self, numero) :
-        label_lift = ctk.CTkLabel(self, text= f"Chairlift #{numero}", width= 40, height=40)
-        label_lift.grid(row=5*numero, column=0)
+        #Creer une frame pour chacun
+        frame_lift = ctk.CTkFrame(self)
+        frame_lift.grid(row=numero-1, column=0)
+
+        #Mettre les widgets dans la frame
+        label_lift = ctk.CTkLabel(frame_lift, text= f"Chairlift #{numero}", font=("Arial", 20, "bold"))
+        label_lift.grid(row=0, column=0)
 
 
     def quand_choix_csv(self) :
