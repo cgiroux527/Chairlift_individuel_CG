@@ -36,23 +36,25 @@ class Compare(ctk.CTkFrame) :
                 self.importer(df_lecture)
 
             except (OSError, ValueError, KeyError) as erreur:
-                messagebox.showerror("Erreur", erreur)
-                print("Chargement impossible :", erreur)
+                messagebox.showerror("Erreur dans l'import : ", erreur)
+                print("Chargement impossible ", erreur)
 
 
     def importer(self, df) :
         df = pd.read_csv(self.chemin)
 
         df = df.drop_duplicates()
+        try :
+            df = df.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
 
-        df = df.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
+            df = df.dropna()
 
-        df = df.dropna()
+            condition_vitesse = (df["speed_m_per_s"] >= 1.0) & (df["speed_m_per_s"] <= 10.0)
+            df = df[condition_vitesse]
+        except Exception as erreur :
+            messagebox.showerror("Erreur dans le fichier choisi ", f"Assurez vous d'avoir les bonnes colonnes de OpenSkiData : {erreur}")
 
-        condition_vitesse = (df["speed_m_per_s"] >= 1.0) & (df["speed_m_per_s"] <= 10.0)
-        df = df[condition_vitesse]
-
-        #FILTRER LE CHOIX
+        #TODO FILTRER LE CHOIX
 
         df = df.reset_index(drop=True)
 
