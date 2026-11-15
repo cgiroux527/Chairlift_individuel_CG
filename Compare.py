@@ -28,11 +28,11 @@ class Compare(ctk.CTkFrame) :
         #Radio buttons pour chairlift 2
 
     def quand_importer(self) :
-        chemin = filedialog.askopenfilename(defaultextension=".csv",
+        self.chemin = filedialog.askopenfilename(defaultextension=".csv",
         filetypes=[("Fichiers CSV", "*.csv")])
-        if chemin:
+        if self.chemin:
             try :
-                df_lecture = pd.read_csv(chemin)
+                df_lecture = pd.read_csv(self.chemin)
                 self.importer(df_lecture)
 
             except (OSError, ValueError, KeyError) as erreur:
@@ -40,7 +40,7 @@ class Compare(ctk.CTkFrame) :
 
 
     def importer(self, df) :
-        df = pd.read_csv("lifts.csv")
+        df = pd.read_csv(self.chemin)
 
         df = df.drop_duplicates()
 
