@@ -1,4 +1,4 @@
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, IntVar
 
 import customtkinter as ctk
 import pandas as pd
@@ -15,23 +15,44 @@ class Compare(ctk.CTkFrame) :
         self.chairlift_1 = Chairlift()
         self.chairlift_2 = Chairlift()
 
-        self.donnee_importee = False
-        self.radio_var = 0
+        self.est_donnee_importee = False
+        self.radio_var = IntVar(value=0)
 
         self.creer_widgets()
 
 
     def creer_widgets(self) :
 
-        #Bouton importer 
-        self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
-        self.bouton_donnee.grid(row=0, column=0)
+        nombre_lifts = 1
+        while nombre_lifts < 3 :
+            label_lift = ctk.CTkLabel(text= f"Chairlift #{nombre_lifts}", width= 12, height= 6)
+            label_lift.grid(row=0, column=0)
 
-        #Radio button pour chairlift 1 
-        #TODO si les donnees sont importe le bouton est dispo 
+            #RADIO BUTTON choix entre csv et personnalisé
+            if self.est_donnee_importee :
+                self.radio_choix_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1)
+                self.radio_choix_csv.grid(row=1, column=0)
+            else : 
+                #Bouton importer 
+                self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
+                self.bouton_donnee.grid(row=1, column=0)
 
+            self.radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
+            self.radio_choix_perso.grid(row=2, column=0)
+            
+            nombre_lifts += 1
 
-        #Radio buttons pour chairlift 2
+    def quand_choix_csv(self) :
+        print("options menu csv")
+        #les options menu du csv avec pandas
+            #choix pays
+                #choix region 
+                    #choix lift
+    
+    def quand_choix_perso(self) :
+        print("options menu personnalisee")
+        #Les options menu avec chairlift personnalisee
+            #choix lift 
 
     def quand_importer(self) :
         self.chemin = filedialog.askopenfilename(defaultextension=".csv",
@@ -40,6 +61,7 @@ class Compare(ctk.CTkFrame) :
             try :
                 df_lecture = pd.read_csv(self.chemin)
                 self.importer(df_lecture)
+                self.est_donnee_importee = True
 
             except (OSError, ValueError, KeyError) as erreur:
                 messagebox.showerror("Erreur dans l'import : ", erreur)
@@ -57,7 +79,7 @@ class Compare(ctk.CTkFrame) :
 
             condition_vitesse = (df["speed_m_per_s"] >= 1.0) & (df["speed_m_per_s"] <= 10.0)
             df = df[condition_vitesse]
-        except Exception as erreur :
+        except Exception as erreur :  
             messagebox.showerror("Erreur dans le fichier choisi ", f"Assurez vous d'avoir les bonnes colonnes de OpenSkiData : {erreur}")
 
         #TODO FILTRER LE CHOIX
