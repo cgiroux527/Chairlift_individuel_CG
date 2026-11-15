@@ -1,5 +1,6 @@
-import customtkinter as ctk
 from tkinter import IntVar, filedialog
+
+import customtkinter as ctk
 
 from Chairlift import Chairlift
 from GraphControl import GraphControl
@@ -359,3 +360,6 @@ class PageCreation(ctk.CTkFrame) :
         self.sliders.reset_radio_var()
     
         self.label_nb_personne.configure(text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()))
+
+    def get_chairlift_courant(self) :
+        return self.__chairlift

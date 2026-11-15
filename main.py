@@ -1,9 +1,8 @@
-from Sliders import PageCreation
-from Compare import Compare
-from Accueil import Accueil
-
-
 import customtkinter as ctk
+
+from Accueil import Accueil
+from Compare import Compare
+from Sliders import PageCreation
 
 
 class MainApp(ctk.CTk) :
@@ -13,6 +12,8 @@ class MainApp(ctk.CTk) :
         super().__init__()
         self.title("ELEVATE - Comparateur de remontée mécanique")
         self.geometry("1200x700")
+
+        self.chairlifts_cree = []
 
         self.afficher_menu_principal()
 
@@ -28,6 +29,8 @@ class MainApp(ctk.CTk) :
         #Appeler instance du createur
         self.changer_page(PageCreation)
 
+        self.chairlifts_cree.append(self.page_courante.get_chairlift_courant())
+
     def afficher_comparer(self) :
         #Appeler instance du comparateur
         self.changer_page(Compare)
@@ -37,6 +40,9 @@ class MainApp(ctk.CTk) :
 
         self.page_courante = choix(self)
         self.page_courante.pack(fill="both")
+
+    def get_chairlifts(self) :
+        return self.chairlifts_cree
 
     
 #Loop du MainApp et choix de l'apparence du ctk

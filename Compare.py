@@ -1,9 +1,10 @@
+from tkinter import filedialog, messagebox
+
 import customtkinter as ctk
 import pandas as pd
 
-from tkinter import filedialog, messagebox
-
 from Chairlift import Chairlift
+
 
 class Compare(ctk.CTkFrame) :
 
@@ -13,6 +14,9 @@ class Compare(ctk.CTkFrame) :
 
         self.chairlift_1 = Chairlift()
         self.chairlift_2 = Chairlift()
+
+        self.donnee_importee = False
+        self.radio_var = 0
 
         self.creer_widgets()
 
@@ -24,6 +28,8 @@ class Compare(ctk.CTkFrame) :
         self.bouton_donnee.grid(row=0, column=0)
 
         #Radio button pour chairlift 1 
+        #TODO si les donnees sont importe le bouton est dispo 
+
 
         #Radio buttons pour chairlift 2
 
