@@ -21,6 +21,7 @@ class Compare(ctk.CTkFrame) :
 
         self.est_donnee_importee = False
         self.radio_vars = [IntVar(value=0), IntVar(value=0)]
+        self.radio_buttons_csv = []
 
         self.creer_widgets()
 
@@ -29,6 +30,10 @@ class Compare(ctk.CTkFrame) :
 
         self.creer_choix_lift(1) 
         self.creer_choix_lift(2)
+
+        #Bouton importer 
+        self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
+        self.bouton_donnee.grid(row=0, column=0)
 
     """nombre_lifts = 1
         while nombre_lifts < 3 :
@@ -53,12 +58,19 @@ class Compare(ctk.CTkFrame) :
     def creer_choix_lift(self, numero) :
         #Creer une frame pour chacun
         frame_lift = ctk.CTkFrame(self)
-        frame_lift.grid(row=numero-1, column=0)
+        frame_lift.grid(row=numero, column=0)
 
         #Mettre les widgets dans la frame
         label_lift = ctk.CTkLabel(frame_lift, text= f"Chairlift #{numero}", font=("Arial", 20, "bold"))
         label_lift.grid(row=0, column=0)
 
+
+        self.radio_buttons_csv.append(ctk.CTkRadioButton(frame_lift, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_vars[numero-1], value=numero, state="disabled"))
+        self.radio_buttons_csv[numero-1].grid(row=1, column=0)
+        
+    def changer_etat_csv(self) :
+        for i in range(NOMBRE_COMPARER) :
+            self.radio_buttons_csv[i].configure(state="normal" if self.est_donnee_importee else "disabled")
 
     def quand_choix_csv(self) :
         print("options menu csv")
@@ -80,6 +92,7 @@ class Compare(ctk.CTkFrame) :
                 df_lecture = pd.read_csv(self.chemin)
                 self.importer(df_lecture)
                 self.est_donnee_importee = True
+                self.changer_etat_csv()
 
             except (OSError, ValueError, KeyError) as erreur:
                 messagebox.showerror("Erreur dans l'import : ", erreur)
