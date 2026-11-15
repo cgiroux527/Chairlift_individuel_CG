@@ -1,10 +1,12 @@
-
+import csv
 
 import numpy as np
-import csv
+
 
 class Chairlift:
     def __init__(self):
+        self.nom = ""
+
         self.__vitesse = 0 # m/s
         self.__nombreDeChaise = 0
         self.__nombreDePersonnesParChaise = 0
@@ -14,6 +16,8 @@ class Chairlift:
 
         self.__parametreObserver = "none"
 
+    def definirNom(self, nom) :
+        self.nom = str(nom)
     #setter pour la vitesse de deplacement du chairlift
     def definirVitesse(self, vitesse):
         if vitesse >= 0:

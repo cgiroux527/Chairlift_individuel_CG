@@ -34,9 +34,9 @@ class Sliders(ctk.CTkFrame) :
 
         # Créer les boutons d'importation et d'exportation, leur passer la commande _quand_importer qui est appelé si les boutons sont cliqués
         self.bouton_importer = ctk.CTkButton(self, text="Importer un CSV", command=self._quand_importer)
-        self.bouton_importer.grid(row=6, column=0, padx=PADDING_EN_X, pady=20)
+        self.bouton_importer.grid(row=7, column=0, padx=PADDING_EN_X, pady=20)
         self.bouton_exporter = ctk.CTkButton(self, text="Exporter un CSV", command=self._quand_exporter)
-        self.bouton_exporter.grid(row=6, column=1, padx=PADDING_EN_X, pady=20)
+        self.bouton_exporter.grid(row=7, column=1, padx=PADDING_EN_X, pady=20)
 
         # initialiser la variable pour les "radiobutton", empêche que plusieurs soient cochés
         self.radio_var = IntVar(value=0)
@@ -57,8 +57,21 @@ class Sliders(ctk.CTkFrame) :
         # Configurer les colonnes pour qu'ils prennent le frame, lorsqu'elle est étirée
         for i in range(7) :
             self.grid_rowconfigure(i, weight=1)
+
+        #Entry pour nom chairlift
+        self.creer_entry()
         
-        
+
+    def creer_entry(self) :
+        self.nom_var=ctk.StringVar()
+        self.nom_label = ctk.CTkLabel(self, text="Nom de la remontée :")
+        self.nom_label.grid(row=6, column=0, padx=(10,6), pady=PADDING_EN_Y, sticky="w")
+        self.nom_entry = ctk.CTkEntry(self, placeholder_text="Entrez le nom", textvariable=self.nom_var)
+        self.nom_entry.grid(row=6, column=1, padx=(10,6), pady=PADDING_EN_Y, sticky="ew")
+
+    def get_entry_nom(self) :
+        return str(self.nom_var)
+
     # Les suivantes sont appelées pour créer sliders, texte et boutons, etc. de chacun des paramètres.
     # Le fonctionnement de celles-ci est identique dépendant des paramètres, l'explication est donc seulement fait une fois.
     def creer_widgets_cable(self) :
@@ -312,7 +325,8 @@ class Sliders(ctk.CTkFrame) :
         
         self.slider_vitesse.set(self.chairlift.obtenirVitesse())
         self.text_vitesse.configure(text=str(self.chairlift.obtenirVitesse()) + " m/s")
-        
+
+
 
 class PageCreation(ctk.CTkFrame) :
     def __init__(self, parent) :
@@ -329,18 +343,22 @@ class PageCreation(ctk.CTkFrame) :
     
         # Initialiser la frame du Graphique
         self.graph = GraphControl(self, self.__chairlift)
-        self.graph.grid(row=0, column=1, sticky="nsew", padx=12, pady=12)
+        self.graph.grid(row=0, column=1, columnspan=2, sticky="nsew", padx=12, pady=12)
     
         # Affichage du label du nombre de personnes par heure avec les paramètres courants.
         self.label_nb_personne = ctk.CTkLabel(self, bg_color="white", text="Nombre de personnes par heure : " + str(self.__chairlift.calculerNombreDePersonnesParHeure()), text_color="black")
-        self.label_nb_personne.grid(row=1, column=1, sticky="nsew", padx=10, pady=(0,12))
+        self.label_nb_personne.grid(row=1, column=1, columnspan=2, sticky="nsew", padx=10, pady=(0,12))
         # Bouton de rafraichissement
         self.bouton_rafraichissement = ctk.CTkButton(self, text="Recalculer", command=self._rafraichissement)
         self.bouton_rafraichissement.grid(row=2, column=1, sticky="nsew", padx=12, pady=(3,12))
+        #Bouton creer
+        self.bouton_creer = ctk.CTkButton(self, text="Créer", command=self._creer_lift)
+        self.bouton_creer.grid(row=2, column=2, sticky="nsew", padx=12, pady=(3,12))
     
         # Modifier le poids des différentes colonnes
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
         #Configurer les rows du grid
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=0)
@@ -363,3 +381,7 @@ class PageCreation(ctk.CTkFrame) :
 
     def get_chairlift_courant(self) :
         return self.__chairlift
+
+    def _creer_lift(self) :
+        nom = self.sliders.get_entry_nom()
+        self.__chairlift.definirNom(nom)
