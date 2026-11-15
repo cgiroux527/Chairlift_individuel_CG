@@ -6,6 +6,9 @@ import pandas as pd
 from Chairlift import Chairlift
 
 
+NOMBRE_ROWS_PAR_LIFT = 5
+
+
 class Compare(ctk.CTkFrame) :
 
     def __init__(self, parent) :
@@ -16,20 +19,23 @@ class Compare(ctk.CTkFrame) :
         self.chairlift_2 = Chairlift()
 
         self.est_donnee_importee = False
-        self.radio_var = IntVar(value=0)
+        self.radio_vars = [IntVar(value=0), IntVar(value=0)]
 
         self.creer_widgets()
 
 
     def creer_widgets(self) :
 
+        self.creer_choix_lift(1) 
+        self.creer_choix_lift(2)
+
         nombre_lifts = 1
         while nombre_lifts < 3 :
-            label_lift = ctk.CTkLabel(text= f"Chairlift #{nombre_lifts}", width= 12, height= 6)
-            label_lift.grid(row=0, column=0)
+            
 
             #RADIO BUTTON choix entre csv et personnalisé
             if self.est_donnee_importee :
+                self.bouton_donnee.destroy()
                 self.radio_choix_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1)
                 self.radio_choix_csv.grid(row=1, column=0)
             else : 
@@ -41,6 +47,11 @@ class Compare(ctk.CTkFrame) :
             self.radio_choix_perso.grid(row=2, column=0)
             
             nombre_lifts += 1
+
+    def creer_choix_lift(self, numero) :
+        label_lift = ctk.CTkLabel(self, text= f"Chairlift #{numero}", width= 40, height=40)
+        label_lift.grid(row=5*numero, column=0)
+
 
     def quand_choix_csv(self) :
         print("options menu csv")
