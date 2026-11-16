@@ -4,6 +4,7 @@ import customtkinter as ctk
 
 from Chairlift import Chairlift
 from GraphControl import GraphControl
+from Accueil import Accueil
 
 # Constante des paddings pour les widgets de chaque paramètre
 PADDING_EN_Y = 30
@@ -70,7 +71,7 @@ class Sliders(ctk.CTkFrame) :
         self.nom_entry.grid(row=6, column=1, padx=(10,6), pady=PADDING_EN_Y, sticky="ew")
 
     def get_entry_nom(self) :
-        return str(self.nom_var)
+        return self.nom_var.get()
 
     # Les suivantes sont appelées pour créer sliders, texte et boutons, etc. de chacun des paramètres.
     # Le fonctionnement de celles-ci est identique dépendant des paramètres, l'explication est donc seulement fait une fois.
@@ -352,7 +353,7 @@ class PageCreation(ctk.CTkFrame) :
         self.bouton_rafraichissement = ctk.CTkButton(self, text="Recalculer", command=self._rafraichissement)
         self.bouton_rafraichissement.grid(row=2, column=1, sticky="nsew", padx=12, pady=(3,12))
         #Bouton creer
-        self.bouton_creer = ctk.CTkButton(self, text="Créer", command=self._creer_lift)
+        self.bouton_creer = ctk.CTkButton(self, text="Créer et revenir à l'accueil", command=self._creer_lift)
         self.bouton_creer.grid(row=2, column=2, sticky="nsew", padx=12, pady=(3,12))
     
         # Modifier le poids des différentes colonnes
@@ -385,3 +386,4 @@ class PageCreation(ctk.CTkFrame) :
     def _creer_lift(self) :
         nom = self.sliders.get_entry_nom()
         self.__chairlift.definirNom(nom)
+        self.master.changer_page(Accueil)
