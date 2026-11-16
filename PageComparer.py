@@ -110,7 +110,7 @@ class Compare(ctk.CTkFrame) :
 
 
         
-class CompareWindow(ctk.CTkFrame) :
+class PageComparer(ctk.CTkFrame) :
 
     def __init__(self, parent) :
 

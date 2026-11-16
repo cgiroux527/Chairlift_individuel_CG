@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
 from Accueil import Accueil
-from Compare import CompareWindow
-from Sliders import PageCreation
+from PageComparer import PageComparer
+from PageCreation import PageCreation
 
 
 class MainApp(ctk.CTk) :
@@ -33,7 +33,7 @@ class MainApp(ctk.CTk) :
 
     def afficher_comparer(self) :
         #Appeler instance du comparateur
-        self.changer_page(CompareWindow)
+        self.changer_page(PageComparer)
     
     def changer_page(self, choix) :
         self.detruire_frame()
