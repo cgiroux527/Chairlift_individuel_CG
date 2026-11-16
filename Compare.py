@@ -17,6 +17,8 @@ class Compare(ctk.CTkFrame) :
 
         self.radio_var = IntVar(value=0)
         self.df = df
+        self.choix_pays = ""
+        self.choix_region = ""
 
         self.creer_widgets()
 
@@ -31,12 +33,26 @@ class Compare(ctk.CTkFrame) :
 
         
 
+    def quand_pays(self, choice) :
+        if choice != "Pays" :
+            self.choix_pays = choice
+            print("pays choisi : ", choice)
+
+    def quand_region(self, choice) :
+        if choice != "Region" :
+            self.choix_region = choice
+            print("region choisi : ", choice)
+
     def quand_choix_csv(self) :
         print("options menu csv")
-        #les options menu du csv avec pandas
-            #choix pays
-                #choix region 
-                    #choix lift
+
+        option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist())
+        option_pays.grid(row=2, column=0)
+        option_pays.set("Pays")
+
+        option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=self.df.loc[self.df["countries"] == self.choix_pays, "regions"].unique().tolist())
+        option_region.grid(row=3, column=0)
+        option_region.set("Region")
     
     def quand_choix_perso(self) :
         print("options menu personnalisee")
@@ -146,6 +162,9 @@ class CompareWindow(ctk.CTkFrame) :
 
             condition_vitesse = (self.df_csv["speed_m_per_s"] >= 1.0) & (self.df_csv["speed_m_per_s"] <= 10.0)
             self.df_csv = self.df_csv[condition_vitesse]
+
+            condition_2_pays = self.df_csv["countries"].str.contains(";")
+            self.df_csv = self.df_csv[~condition_2_pays]
         except Exception as erreur :  
             messagebox.showerror("Erreur dans le fichier choisi ", f"Assurez vous d'avoir les bonnes colonnes de OpenSkiData : {erreur}")
 
