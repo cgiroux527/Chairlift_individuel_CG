@@ -126,6 +126,10 @@ class CompareWindow(ctk.CTkFrame) :
                 self.importer()
                 self.est_donnee_importee = True
 
+                for choix in self.choix:
+                    choix.radio_button_csv.configure(state="normal")
+                    choix.df = self.df_csv
+
             except (OSError, ValueError, KeyError) as erreur:
                 messagebox.showerror("Erreur dans l'import : ", erreur)
                 print("Chargement impossible ", erreur)
