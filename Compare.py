@@ -87,53 +87,7 @@ class Compare(ctk.CTkFrame) :
     def quand_choix_perso(self) :
         print("options menu personnalisee")
         #Les options menu avec chairlift personnalisee
-            #choix lift 
-"""
-        
-
-    def creer_choix_lift(self, numero) :
-        #Creer une frame pour chacun
-        self.frames_lift.append(ctk.CTkFrame(self))
-        self.frames_lift[numero-1].grid(row=numero, column=0)
-
-        #Mettre les widgets dans la frame
-        label_lift = ctk.CTkLabel(self.frames_lift[numero-1], text= f"Chairlift #{numero}", font=("Arial", 20, "bold"))
-        label_lift.grid(row=0, column=0)
-
-        self.radio_buttons_csv.append(ctk.CTkRadioButton(self.frames_lift[numero-1], text="Depuis le CSV importé", command=lambda :self.quand_choix_csv(numero), variable=self.radio_vars[numero-1], value=numero, state="disabled"))
-        self.radio_buttons_csv[numero-1].grid(row=1, column=0)
-
-        radio_choix_perso = ctk.CTkRadioButton(self.frames_lift[numero-1], text="Chairlift personnalisé", command=lambda :self.quand_choix_perso(numero), variable=self.radio_vars[numero-1], value=numero+1)
-        radio_choix_perso.grid(row=2, column=0)
-
-        
-
-        
-    def changer_etat_csv(self) :
-        for i in range(NOMBRE_COMPARER) :
-            self.radio_buttons_csv[i].configure(state="normal" if self.est_donnee_importee else "disabled")
-
-    def quand_pays(self, choice) :
-        if choice != "Pays" :
-            self.choix_pays = choice
-            print("pays choisi : ", choice)
-
-    def quand_region(self, choice) :
-        if choice != "Region" :
-            self.choix_region = choice
-            print("region choisi : ", choice)
-
-    def quand_choix_csv(self, numero) :
-        print("options menu csv")
-
-        option_pays = ctk.CTkOptionMenu(self.frames_lift[numero-1], command=self.quand_pays, values=self.df_import["countries"].unique().tolist())
-        option_pays.grid(row=3, column=0)
-        option_pays.set("Pays")
-
-        option_region = ctk.CTkOptionMenu(self.frames_lift[numero-1], command=self.quand_region, values=self.df_import.loc[self.df_import["countries"] == self.choix_pays, "regions"].unique().tolist())
-        option_region.grid(row=4, column=0)
-        option_region.set("Region")"""
-    
+            #choix lift   
 
         
 class CompareWindow(ctk.CTkFrame) :
@@ -193,8 +147,16 @@ class CompareWindow(ctk.CTkFrame) :
             condition_vitesse = (self.df_csv["speed_m_per_s"] >= 1.0) & (self.df_csv["speed_m_per_s"] <= 10.0)
             self.df_csv = self.df_csv[condition_vitesse]
 
-            condition_2_pays = self.df_csv["countries"].str.contains(";")
+            #Enlever les instances de deux pays differents et pareil pour region et names (ex : Alberta; Manitoba. pour le meme lift)
+            condition_2_pays = self.df_csv["countries"].str.contains(";" | ",")
             self.df_csv = self.df_csv[~condition_2_pays]
+
+            condition_2_regions = self.df_csv["regions"].str.contains(";" | ",")
+            self.df_csv = self.df_csv[~condition_2_regions]
+
+            condition_2_noms = self.df_csv["names"].str.contains(";" | ",")
+            self.df_csv = self.df_csv[~condition_2_noms]
+
         except Exception as erreur :  
             messagebox.showerror("Erreur dans le fichier choisi ", f"Assurez vous d'avoir les bonnes colonnes de OpenSkiData : {erreur}")
 
