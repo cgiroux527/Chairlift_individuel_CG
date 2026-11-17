@@ -68,7 +68,13 @@ class SelectionLift(ctk.CTkFrame) :
             self.choix_lift_csv = choix
             print("lift du csv choisi : ", choix)
             
-            self.chairlift = self.trouver_lift_cree()
+            condition_nom_lift = (self.df["name"] == self.choix_lift_csv) & (self.df["countries"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
+            self.df_lift_choisi = self.df[condition_nom_lift]
+            print("lift du csv choisi : ", self.df_lift_choisi)
+
+            self.chairlift.definirVitesse(float(self.df_lift_choisi.loc[:,"speed_m_per_s"].item()))
+            self.chairlift.definirNombreDePersonnesParChaise(int(self.df_lift_choisi.loc[:,"occupancy"].item()))
+            self.chairlift.definirLongueurDuTrajet(int(self.df_lift_choisi.loc[:,"inclined_length_m"].item()))
 
 
     def quand_choix_csv(self) :
@@ -104,34 +110,18 @@ class SelectionLift(ctk.CTkFrame) :
 
     def quand_lift_perso(self, choix) :
         if choix != "Remontee Perso" and choix != "Aucune remontee cree" :
-            condition_nom_lift = (self.df["name"] == choix) & (self.df["pays"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
-            self.choix_lift_csv = self.df[condition_nom_lift]
-            print("lift du createur choisi : ", self.choix_lift_csv)
-
-            self.chairlift.definirVitesse(self.choix_lift_csv["speed_m_per_s"])
-            self.chairlift.definirNombreDePersonnesParChaise(self.choix_lift_csv["capacity"])
-            self.chairlift.definirLongueurDuTrajet(self.choix_lift_csv["inclined_length_m"])
-
-            #TODO le return est grave?
-            #TODO j'ai commencer a modif dans la branche main?
-            #TODO frayeur de trop de vals dans le csv que je peux pas tester
+            self.choix_lift_cree = choix
+            print("lift cree choisi : ", self.choix_lift_cree)
+            self.chairlift = self.trouver_lift_cree()
+            
 
     def trouver_lift_cree(self) :
         for lift in self.chairlifts_cree :
-            if lift.nom == self.choix_lift_csv :
+            if lift.nom == self.choix_lift_cree :
                 print("Lift trouvee : ", lift.nom)
                 return lift
             else : 
                 continue
-
-    def trouver_lift_csv(self) :
-        for lift in self :
-            if lift.nom == self.choix_lift_csv :
-                print("Lift trouvee : ", lift.nom)
-                return lift
-            else : 
-                continue
-
 
 
         
@@ -207,3 +197,6 @@ class PageComparer(ctk.CTkFrame) :
             messagebox.showerror("Erreur dans le fichier choisi ", f"Assurez vous d'avoir les bonnes colonnes de OpenSkiData : {erreur}")
 
         self.df_csv = self.df_csv.reset_index(drop=True)
+
+
+#TODO frayeur de trop de vals dans le csv que je peux pas tester
