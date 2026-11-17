@@ -7,7 +7,7 @@ from Chairlift import Chairlift
 
 NOMBRE_LIFTS = 2
 
-class Compare(ctk.CTkFrame) :
+class SelectionLift(ctk.CTkFrame) :
 
     def __init__(self, parent, df) :
 
@@ -67,8 +67,9 @@ class Compare(ctk.CTkFrame) :
         if choix != "Remontee" and choix != "Choisir une region":
             self.choix_lift_csv = choix
             print("lift du csv choisi : ", choix)
+            
+            self.chairlift = self.trouver_lift_cree()
 
-            #TODO ajouter que c'est le chairlift choisi! pour cette instance de COMPARE
 
     def quand_choix_csv(self) :
         if self.option_lift_perso :
@@ -95,18 +96,42 @@ class Compare(ctk.CTkFrame) :
             self.option_lift_csv.destroy()
             self.option_lift_csv, self.option_pays, self.option_region = None, None, None
 
-        chairlifts_cree = self.master.master.get_chairlifts()
-        noms_chairlifts_cree = [lift.nom for lift in chairlifts_cree]
-        self.option_lift_perso = ctk.CTkOptionMenu(self, command=self.quand_lift_perso, values=["Aucune remontee cree"] if not chairlifts_cree else noms_chairlifts_cree)
+        self.chairlifts_cree = self.master.master.get_chairlifts()
+        noms_chairlifts_cree = [lift.nom for lift in self.chairlifts_cree]
+        self.option_lift_perso = ctk.CTkOptionMenu(self, command=self.quand_lift_perso, values=["Aucune remontee cree"] if not self.chairlifts_cree else noms_chairlifts_cree)
         self.option_lift_perso.grid(row=2, column=0)
         self.option_lift_perso.set("Remontee cree") 
 
     def quand_lift_perso(self, choix) :
         if choix != "Remontee Perso" and choix != "Aucune remontee cree" :
-            self.choix_lift_csv = choix
-            print("lift du createur choisi : ", choix)
-        
-            #TODO ajouter que c'est le chairlift choisi! pour cette instance de COMPARE
+            condition_nom_lift = (self.df["name"] == choix) & (self.df["pays"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
+            self.choix_lift_csv = self.df[condition_nom_lift]
+            print("lift du createur choisi : ", self.choix_lift_csv)
+
+            self.chairlift.definirVitesse(self.choix_lift_csv["speed_m_per_s"])
+            self.chairlift.definirNombreDePersonnesParChaise(self.choix_lift_csv["capacity"])
+            self.chairlift.definirLongueurDuTrajet(self.choix_lift_csv["inclined_length_m"])
+
+            #TODO le return est grave?
+            #TODO j'ai commencer a modif dans la branche main?
+            #TODO frayeur de trop de vals dans le csv que je peux pas tester
+
+    def trouver_lift_cree(self) :
+        for lift in self.chairlifts_cree :
+            if lift.nom == self.choix_lift_csv :
+                print("Lift trouvee : ", lift.nom)
+                return lift
+            else : 
+                continue
+
+    def trouver_lift_csv(self) :
+        for lift in self :
+            if lift.nom == self.choix_lift_csv :
+                print("Lift trouvee : ", lift.nom)
+                return lift
+            else : 
+                continue
+
 
 
         
@@ -120,7 +145,7 @@ class CompareWindow(ctk.CTkFrame) :
 
         self.choix = []
         for i in range(NOMBRE_LIFTS) :
-            self.choix.append(Compare(self, self.df_csv))
+            self.choix.append(SelectionLift(self, self.df_csv))
             self.choix[i].grid(row=2*(i+1), column=0)
 
         self.est_donnee_importee = False
