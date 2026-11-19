@@ -28,10 +28,10 @@ class SelectionLift(ctk.CTkFrame) :
 
     def creer_widgets(self) :
         
-        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled")
+        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled", bg_color="#0ba84a")
         self.radio_button_csv.grid(row=0, column=0)
         
-        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
+        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2, bg_color="#0ba84a")
         radio_choix_perso.grid(row=1, column=0)
 
 
@@ -86,15 +86,15 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_perso.destroy()
             self.option_lift_perso = None
 
-        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist())
+        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist(), bg_color="#c8d1d9")
         self.option_pays.grid(row=2, column=0)
         self.option_pays.set("Pays")
 
-        self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"])
+        self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"], bg_color="#c8d1d9")
         self.option_region.grid(row=3, column=0)
         self.option_region.set("Region")
 
-        self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"])
+        self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"], bg_color="#c8d1d9")
         self.option_lift_csv.grid(row=4, column=0)
         self.option_lift_csv.set("Remontee")
     
@@ -144,7 +144,8 @@ class AfficherSelection(ctk.CTkFrame) :
         print("mise a jour que c'est le bon chairlift")
 
     def creer_widgets(self) :
-        self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom)
+        self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom, font=("Arial", 20, "bold"), text_color="#4a7ff7",)
+        self.label_nom.grid(row=0, column=0)
 
 
 
@@ -184,7 +185,7 @@ class PageComparer(ctk.CTkFrame) :
         self.bouton_donnee.grid(row=0, column=0)
 
         for i in range(NOMBRE_LIFTS) :
-            label_lift = ctk.CTkLabel(self, text= f"Chairlift #{i+1}", font=("Arial", 20, "bold"))
+            label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 20, "bold"))
             label_lift.grid(row=2*i+1, column=0)
 
     
