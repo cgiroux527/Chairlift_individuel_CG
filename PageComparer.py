@@ -9,7 +9,7 @@ NOMBRE_LIFTS = 2
 
 class SelectionLift(ctk.CTkFrame) :
 
-    def __init__(self, parent, df, sur_maj) :
+    def __init__(self, parent, df) :
 
         super().__init__(parent)
 
@@ -22,8 +22,6 @@ class SelectionLift(ctk.CTkFrame) :
         self.option_lift_perso, self.option_lift_csv, self.option_pays, self.option_region = None, None, None, None
 
         self.creer_widgets()
-
-        self.maj = sur_maj
 
 
     def creer_widgets(self) :
@@ -78,8 +76,6 @@ class SelectionLift(ctk.CTkFrame) :
             self.chairlift.definirNombreDePersonnesParChaise(int(self.df_lift_choisi.loc[:,"occupancy"].item()))
             self.chairlift.definirLongueurDuTrajet(int(self.df_lift_choisi.loc[:,"inclined_length_m"].item()))
 
-            self.maj()
-
 
     def quand_choix_csv(self) :
         if self.option_lift_perso :
@@ -117,8 +113,6 @@ class SelectionLift(ctk.CTkFrame) :
             self.choix_lift_cree = choix
             print("lift cree choisi : ", self.choix_lift_cree)
             self.chairlift = self.trouver_lift_cree()
-
-            self.maj()
             
 
     def trouver_lift_cree(self) :
@@ -169,7 +163,7 @@ class PageComparer(ctk.CTkFrame) :
         self.choix = []
         self.affichage_choix = []
         for i in range(NOMBRE_LIFTS) :
-            self.choix.append(SelectionLift(self, self.df_csv, self.maj))
+            self.choix.append(SelectionLift(self, self.df_csv))
             self.choix[i].grid(row=2*(i+1), column=0)
 
             self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
@@ -179,9 +173,6 @@ class PageComparer(ctk.CTkFrame) :
 
         self.creer_widgets()
 
-    def maj(self) :
-        for i in range(NOMBRE_LIFTS) :
-            self.affichage_choix[i].mettre_a_jour_donnee()
     
     def creer_widgets(self) :
         #Bouton importer 
