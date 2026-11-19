@@ -71,7 +71,8 @@ class SelectionLift(ctk.CTkFrame) :
         if choix != "Remontee" and choix != "Choisir une region":
             self.choix_lift_csv = choix
             print("lift du csv choisi : ", choix)
-            
+
+            #TODO pas sur de la maniere de trouver le bon
             condition_nom_lift = (self.df["name"] == self.choix_lift_csv) & (self.df["countries"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
             self.df_lift_choisi = self.df[condition_nom_lift]
             print("lift du csv choisi : ", self.df_lift_choisi)
@@ -221,8 +222,16 @@ class PageComparer(ctk.CTkFrame) :
 
             self.df_csv = self.df_csv.dropna()
 
+            #Retirer les lifts qui ont le même nom aux mêmes endroits 
+            self.df_csv = self.df_csv.drop_duplicates(subset=["countries", "regions", "names"])
+
+            #Trier pour que les vitesse aient du sens
             condition_vitesse = (self.df_csv["speed_m_per_s"] >= 1.0) & (self.df_csv["speed_m_per_s"] <= 10.0)
             self.df_csv = self.df_csv[condition_vitesse]
+
+            #Trier pour que la longueur du cable ait du sens
+            condition_longueur = (self.df_csv["inclined_length_m"] >= 1.0) & (self.df_csv["inclined_length_m"] <= 10000.0)
+            self.df_csv = self.df_csv[condition_longueur]
 
             #Enlever les instances de deux pays differents et pareil pour region et names (ex : Alberta; Manitoba. pour le meme lift)
             condition_2_pays = self.df_csv["countries"].str.contains(";") | self.df_csv["countries"].str.contains(",")
@@ -233,6 +242,10 @@ class PageComparer(ctk.CTkFrame) :
 
             condition_2_noms = self.df_csv["name"].str.contains(";") | self.df_csv["name"].str.contains(",")
             self.df_csv = self.df_csv[~condition_2_noms]
+
+            #Enlever les faux noms de chairlifts 
+            condition_nom_court = len(self.df_csv["name"]) > 3
+            self.df_csv = self.df_csv[condition_nom_court]
 
             self.est_donnee_importee = True
 
