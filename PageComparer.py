@@ -28,10 +28,10 @@ class SelectionLift(ctk.CTkFrame) :
 
     def creer_widgets(self) :
         
-        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled", bg_color="#0ba84a")
+        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled")
         self.radio_button_csv.grid(row=0, column=0)
         
-        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2, bg_color="#0ba84a")
+        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
         radio_choix_perso.grid(row=1, column=0)
 
 
@@ -86,15 +86,15 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_perso.destroy()
             self.option_lift_perso = None
 
-        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist(), bg_color="#c8d1d9")
+        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist())
         self.option_pays.grid(row=2, column=0)
         self.option_pays.set("Pays")
 
-        self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"], bg_color="#c8d1d9")
+        self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"])
         self.option_region.grid(row=3, column=0)
         self.option_region.set("Region")
 
-        self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"], bg_color="#c8d1d9")
+        self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"])
         self.option_lift_csv.grid(row=4, column=0)
         self.option_lift_csv.set("Remontee")
     
@@ -150,7 +150,7 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Vitesse : {self.chairlift.obtenirVitesse()} m/s", text_color="#c8d1d9")
         self.label_vitesse.grid(row=1, column=0)
 
-        self.label_personne_chaise = ctk.CTkLabel(self, text=f"\u00B7 {self.chairlift.obtenirNombreDePersonneParChaise()} personnes par chaise", text_color="#c8d1d9")
+        self.label_personne_chaise = ctk.CTkLabel(self, text=f"\u00B7 {self.chairlift.obtenirNombreDePersonnesParChaise()} personnes par chaise", text_color="#c8d1d9")
         self.label_personne_chaise.grid(row=2, column=0)
 
         self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirVitesse()} m", text_color="#c8d1d9",)
@@ -182,8 +182,6 @@ class PageComparer(ctk.CTkFrame) :
     def maj(self) :
         for i in range(NOMBRE_LIFTS) :
             self.affichage_choix[i].mettre_a_jour_donnee()
-
-
     
     def creer_widgets(self) :
         #Bouton importer 
