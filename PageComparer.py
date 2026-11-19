@@ -6,9 +6,17 @@ import pandas as pd
 from Chairlift import Chairlift
 
 NOMBRE_LIFTS = 2
+"""
+Légende : 
+            - Index liste : 0 (cable fixe), 1 (débrayable)
+            - Dict Clé : Nombre de personnes par chaise
+            - Dict valeur : Temps embarquement et/ou débarquement
+"""
+TEMPS_EMBARQUEMENTS_CSV = [{2: 1.5, 3: 1.7, 4: 2.0, 6: 2.5, 8: 3.0, 10: 3.5},{2: 4.0, 3: 4.0, 4: 4.5, 6: 5.0, 8: 5.5, 10: 6.0}] #Calcul approximatif pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
+DIST_ENTRE_CHAISES_CSV = [18, 30]
 
+#TODO nombre de chaise avec le csv
 #TODO doit confirmer que les 2 sont choisi avant de peser sur le bouton
-#TODO n'update pas les comparaison quand reclique
 
 class SelectionLift(ctk.CTkFrame) :
 
@@ -71,7 +79,6 @@ class SelectionLift(ctk.CTkFrame) :
             self.choix_lift_csv = choix
             print("lift du csv choisi : ", choix)
 
-            #TODO pas sur de la maniere de trouver le bon
             condition_nom_lift = (self.df["name"] == self.choix_lift_csv) & (self.df["countries"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
             self.df_lift_choisi = self.df[condition_nom_lift]
             print("lift du csv choisi : ", self.df_lift_choisi)
@@ -80,6 +87,20 @@ class SelectionLift(ctk.CTkFrame) :
             self.chairlift.definirNombreDePersonnesParChaise(int(self.df_lift_choisi.loc[:,"occupancy"].item()))
             self.chairlift.definirLongueurDuTrajet(int(self.df_lift_choisi.loc[:,"inclined_length_m"].item()))
 
+            cle = int(self.df_lift_choisi.loc[:,"occupancy"].item())
+            
+            longueur = int(self.df_lift_choisi.loc[:,"inclined_length_m"].item())
+
+            if self.df_lift_choisi["detachable"] == "yes" :
+                self.chairlift.definirTempsDebarquement(TEMPS_EMBARQUEMENTS_CSV[1][cle])
+                self.chairlift.definirTempsEmbarquement(TEMPS_EMBARQUEMENTS_CSV[1][cle])
+                
+                self.chairlift.definirNombreDeChaise(longueur/DIST_ENTRE_CHAISES_CSV[1])
+            else : 
+                self.chairlift.definirTempsDebarquement(TEMPS_EMBARQUEMENTS_CSV[0][cle])
+                self.chairlift.definirTempsEmbarquement(TEMPS_EMBARQUEMENTS_CSV[0][cle])
+                
+                self.chairlift.definirNombreDeChaise(longueur/DIST_ENTRE_CHAISES_CSV[0])
 
     def quand_choix_csv(self) :
         if self.option_lift_perso :
@@ -223,12 +244,12 @@ class PageComparer(ctk.CTkFrame) :
 
         self.df_csv = self.df_csv.drop_duplicates()
         try :
-            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
+            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m", "detachable"]]
 
             self.df_csv = self.df_csv.dropna()
 
             #Retirer les lifts qui ont le même nom aux mêmes endroits 
-            self.df_csv = self.df_csv.drop_duplicates(subset=["countries", "regions", "names"])
+            self.df_csv = self.df_csv.drop_duplicates(subset=["countries", "regions", "name"])
 
             #Trier pour que les vitesse aient du sens
             condition_vitesse = (self.df_csv["speed_m_per_s"] >= 1.0) & (self.df_csv["speed_m_per_s"] <= 10.0)
