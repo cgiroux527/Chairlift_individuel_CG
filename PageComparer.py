@@ -5,19 +5,12 @@ import pandas as pd
 
 from Chairlift import Chairlift
 
-#TODO ligne 101
-
 NOMBRE_LIFTS = 2
-"""
-Légende : 
-            - Index liste : 0 (cable fixe), 1 (débrayable)
-            - Dict Clé : Nombre de personnes par chaise
-            - Dict valeur : Temps embarquement et/ou débarquement
-"""
-TEMPS_EMBARQUEMENTS_CSV = [{2: 1.5, 3: 1.7, 4: 2.0, 6: 2.5, 8: 3.0, 10: 3.5},{2: 4.0, 3: 4.0, 4: 4.5, 6: 5.0, 8: 5.5, 10: 6.0}] #Calcul approximatif pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
-DIST_ENTRE_CHAISES_CSV = [18, 30]
 
-#TODO doit confirmer que les 2 sont choisi avant de peser sur le bouton
+TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 6: 4.0, 8: 4.5, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
+DIST_ENTRE_CHAISES_CSV = 20
+
+#TODO 216
 
 class SelectionLift(ctk.CTkFrame) :
 
@@ -98,16 +91,11 @@ class SelectionLift(ctk.CTkFrame) :
             
             longueur = int(self.df_lift_choisi.loc[:,"inclined_length_m"].item())
 
-            if self.df_lift_choisi["detachable"] == "yes" :
-                self.chairlift.definirTempsDebarquement(TEMPS_EMBARQUEMENTS_CSV[1][cle])
-                self.chairlift.definirTempsEmbarquement(TEMPS_EMBARQUEMENTS_CSV[1][cle])
-                
-                self.chairlift.definirNombreDeChaise(longueur/DIST_ENTRE_CHAISES_CSV[1])
-            else : 
-                self.chairlift.definirTempsDebarquement(TEMPS_EMBARQUEMENTS_CSV[0][cle])
-                self.chairlift.definirTempsEmbarquement(TEMPS_EMBARQUEMENTS_CSV[0][cle])
-                
-                self.chairlift.definirNombreDeChaise(longueur/DIST_ENTRE_CHAISES_CSV[0])
+            self.chairlift.definirTempsDebarquement(TEMPS_EMBARQUEMENTS_CSV[cle])
+            self.chairlift.definirTempsEmbarquement(TEMPS_EMBARQUEMENTS_CSV[cle])
+            
+            self.chairlift.definirNombreDeChaise(longueur/DIST_ENTRE_CHAISES_CSV)
+
 
             self.est_choisi = True
 
@@ -181,7 +169,7 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_longueur = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirLongueurDuTrajet()} m", text_color="#c8d1d9",)
         self.label_longueur.grid(row=3, column=0)
 
-        self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {self.chairlift.calculerTempsTrajet()} m", text_color="#c8d1d9",)
+        self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {self.chairlift.calculerTempsTrajet()} s", text_color="#c8d1d9",)
         self.label_temps.grid(row=4, column=0)
 
     def get_capacite(self) :
@@ -224,8 +212,12 @@ class PageComparer(ctk.CTkFrame) :
         
         if self.pret_a_comparer :
 
-            for i in range(NOMBRE_LIFTS) :
-                self.affichage_choix[i].destroy()
+            if len(self.affichage_choix) > 0 :
+                for i in range(NOMBRE_LIFTS) :
+                    if self.affichage_choix[i] :
+                        self.affichage_choix[i].destroy()
+                    else :
+                        continue
 
             for i in range(NOMBRE_LIFTS) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
