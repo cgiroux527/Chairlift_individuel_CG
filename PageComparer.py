@@ -9,7 +9,7 @@ NOMBRE_LIFTS = 2
 
 class SelectionLift(ctk.CTkFrame) :
 
-    def __init__(self, parent, df) :
+    def __init__(self, parent, df, sur_maj) :
 
         super().__init__(parent)
 
@@ -22,6 +22,8 @@ class SelectionLift(ctk.CTkFrame) :
         self.option_lift_perso, self.option_lift_csv, self.option_pays, self.option_region = None, None, None, None
 
         self.creer_widgets()
+
+        self.maj = sur_maj
 
 
     def creer_widgets(self) :
@@ -76,6 +78,8 @@ class SelectionLift(ctk.CTkFrame) :
             self.chairlift.definirNombreDePersonnesParChaise(int(self.df_lift_choisi.loc[:,"occupancy"].item()))
             self.chairlift.definirLongueurDuTrajet(int(self.df_lift_choisi.loc[:,"inclined_length_m"].item()))
 
+            self.maj()
+
 
     def quand_choix_csv(self) :
         if self.option_lift_perso :
@@ -113,6 +117,8 @@ class SelectionLift(ctk.CTkFrame) :
             self.choix_lift_cree = choix
             print("lift cree choisi : ", self.choix_lift_cree)
             self.chairlift = self.trouver_lift_cree()
+
+            self.maj()
             
 
     def trouver_lift_cree(self) :
@@ -122,6 +128,26 @@ class SelectionLift(ctk.CTkFrame) :
                 return lift
             else : 
                 continue
+
+
+class AfficherSelection(ctk.CTkFrame) :
+
+    def __init__(self, parent, chairlift) :
+        super().__init__(parent)
+
+        self.chairlift = chairlift
+
+        self.creer_widgets()
+
+    def mettre_a_jour_donnee() :
+        #TODO
+        print("mise a jour que c'est le bon chairlift")
+
+    def creer_widgets(self) :
+        self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom)
+
+
+
 
 
         
@@ -134,13 +160,22 @@ class PageComparer(ctk.CTkFrame) :
         self.df_csv = pd.DataFrame()
 
         self.choix = []
+        self.affichage_choix = []
         for i in range(NOMBRE_LIFTS) :
-            self.choix.append(SelectionLift(self, self.df_csv))
+            self.choix.append(SelectionLift(self, self.df_csv, self.maj))
             self.choix[i].grid(row=2*(i+1), column=0)
+
+            self.affichage_choix.append(AfficherSelection())
+            self.affichage_choix[i].grid(row=i, column=1)
 
         self.est_donnee_importee = False
 
         self.creer_widgets()
+
+    def maj(self) :
+        for i in range(NOMBRE_LIFTS) :
+            self.affichage_choix[i].mettre_a_jour_donnee()
+
 
     
     def creer_widgets(self) :
@@ -200,3 +235,4 @@ class PageComparer(ctk.CTkFrame) :
 
 
 #TODO frayeur de trop de vals dans le csv que je peux pas tester
+#TODO le grid des afficher selection doit prendre pas mal plus de place 
