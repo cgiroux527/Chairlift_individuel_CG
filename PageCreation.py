@@ -124,7 +124,7 @@ class Sliders(ctk.CTkFrame) :
     def creer_widgets_embarque(self) :
         ctk.CTkLabel(self, text="Temps d'embarquement").grid(row=3, column=0, sticky="w", padx=PADDING_EN_X, pady=PADDING_EN_Y)
         
-        self.slider_embarque = ctk.CTkSlider(self, from_=0, to=30, number_of_steps=30)
+        self.slider_embarque = ctk.CTkSlider(self, from_=0, to=12, number_of_steps=12)
         self.slider_embarque.set(0)
         self.slider_embarque.configure(command=self._quand_slider_embarque)
         self.slider_embarque.grid(row=3, column=1, sticky="ew", padx=PADDING_EN_X, pady=PADDING_EN_Y)
@@ -138,7 +138,7 @@ class Sliders(ctk.CTkFrame) :
     def creer_widgets_debarque(self) :
         ctk.CTkLabel(self, text="Temps de débarquement").grid(row=4, column=0, sticky="w", padx=PADDING_EN_X, pady=PADDING_EN_Y)
         
-        self.slider_debarque = ctk.CTkSlider(self, from_=0, to=30, number_of_steps=30)
+        self.slider_debarque = ctk.CTkSlider(self, from_=0, to=12, number_of_steps=12)
         self.slider_debarque.set(0)
         self.slider_debarque.configure(command=self._quand_slider_debarque)
         self.slider_debarque.grid(row=4, column=1, sticky="ew", padx=PADDING_EN_X, pady=PADDING_EN_Y)

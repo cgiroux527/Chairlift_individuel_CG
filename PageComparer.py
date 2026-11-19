@@ -7,7 +7,7 @@ from Chairlift import Chairlift
 
 NOMBRE_LIFTS = 2
 
-TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 6: 4.0, 8: 4.5, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
+TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 5:4.0, 6: 4.0, 7:4.2, 8: 4.5, 9:5.0, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
 DIST_ENTRE_CHAISES_CSV = 20
 
 #TODO 216
@@ -82,6 +82,8 @@ class SelectionLift(ctk.CTkFrame) :
             condition_nom_lift = (self.df["name"] == self.choix_lift_csv) & (self.df["countries"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
             self.df_lift_choisi = self.df[condition_nom_lift]
             print("lift du csv choisi : ", self.df_lift_choisi)
+
+            self.chairlift.nom = self.choix_lift_csv
 
             self.chairlift.definirVitesse(float(self.df_lift_choisi.loc[:,"speed_m_per_s"].item()))
             self.chairlift.definirNombreDePersonnesParChaise(int(self.df_lift_choisi.loc[:,"occupancy"].item()))
@@ -169,7 +171,7 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_longueur = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirLongueurDuTrajet()} m", text_color="#c8d1d9",)
         self.label_longueur.grid(row=3, column=0)
 
-        self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {self.chairlift.calculerTempsTrajet()} s", text_color="#c8d1d9",)
+        self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {round(self.chairlift.calculerTempsTrajet(), 1)} s", text_color="#c8d1d9",)
         self.label_temps.grid(row=4, column=0)
 
     def get_capacite(self) :
@@ -202,7 +204,7 @@ class PageComparer(ctk.CTkFrame) :
         self.bouton_donnee.grid(row=0, column=0)
 
         for i in range(NOMBRE_LIFTS) :
-            label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 20, "bold"))
+            label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"))
             label_lift.grid(row=(2*i)+1, column=0)
 
         self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
@@ -210,14 +212,9 @@ class PageComparer(ctk.CTkFrame) :
 
     def quand_comparer(self) :
         
-        if self.pret_a_comparer :
+        if self.pret_a_comparer() :
 
-            if len(self.affichage_choix) > 0 :
-                for i in range(NOMBRE_LIFTS) :
-                    if self.affichage_choix[i] :
-                        self.affichage_choix[i].destroy()
-                    else :
-                        continue
+            self.detruire_affichages()
 
             for i in range(NOMBRE_LIFTS) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
@@ -254,7 +251,7 @@ class PageComparer(ctk.CTkFrame) :
             
             self.df_csv = self.df_csv.drop_duplicates()
 
-            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m", "detachable"]]
+            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
 
             self.df_csv = self.df_csv.dropna()
 
@@ -292,10 +289,20 @@ class PageComparer(ctk.CTkFrame) :
 
     def pret_a_comparer(self) :
         for i in range(NOMBRE_LIFTS):
-            if not self.choix[i].estchoisi:
+            if not self.choix[i].est_choisi:
                 return False
 
         return True
+
+    def detruire_affichages(self) :
+        if len(self.affichage_choix) > 0 :
+            for i in range(NOMBRE_LIFTS) :
+                if self.affichage_choix[i] :
+                    self.affichage_choix[i].destroy()
+                else :
+                    continue
+            self.affichage_choix = []
+
 
 
 
