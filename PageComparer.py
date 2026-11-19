@@ -153,6 +153,9 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {self.chairlift.calculerTempsTrajet()} m", text_color="#c8d1d9",)
         self.label_temps.grid(row=4, column=0)
 
+    def get_capacite(self) :
+        return self.chairlift.calculerNombreDePersonnesParHeure()
+
 
         
 class PageComparer(ctk.CTkFrame) :
