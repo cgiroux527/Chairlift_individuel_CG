@@ -5,9 +5,8 @@ import pandas as pd
 
 from Chairlift import Chairlift
 
-NOMBRE_LIFTS = 3
+NOMBRE_LIFTS = 2
 
-#TODO ligne 75 raise ValueError("can only convert an array of size 1 to a Python scalar")
 #TODO doit confirmer que les 2 sont choisi avant de peser sur le bouton
 #TODO n'update pas les comparaison quand reclique
 
@@ -138,10 +137,6 @@ class AfficherSelection(ctk.CTkFrame) :
 
         self.creer_widgets()
 
-    def mettre_a_jour_donnee() :
-        #TODO
-        print("mise a jour que c'est le bon chairlift")
-
     def creer_widgets(self) :
         self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom, font=("Arial", 20, "bold"), text_color="#4a7ff7",)
         self.label_nom.grid(row=0, column=0)
@@ -152,8 +147,11 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_personne_chaise = ctk.CTkLabel(self, text=f"\u00B7 {self.chairlift.obtenirNombreDePersonnesParChaise()} personnes par chaise", text_color="#c8d1d9")
         self.label_personne_chaise.grid(row=2, column=0)
 
-        self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirVitesse()} m", text_color="#c8d1d9",)
-        self.label_nom.grid(row=3, column=0)
+        self.label_longueur = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirLongueurDuTrajet()} m", text_color="#c8d1d9",)
+        self.label_longueur.grid(row=3, column=0)
+
+        self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {self.chairlift.calculerTempsTrajet()} m", text_color="#c8d1d9",)
+        self.label_temps.grid(row=4, column=0)
 
 
         
@@ -189,6 +187,10 @@ class PageComparer(ctk.CTkFrame) :
         self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0)
 
     def quand_comparer(self) :
+        #Detruire l'ancienne instance
+        for i in range(NOMBRE_LIFTS) :
+            self.affichage_choix[i].destroy()
+
         for i in range(NOMBRE_LIFTS) :
             self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
             self.affichage_choix[i].grid(row=2*i+2, column=1)
