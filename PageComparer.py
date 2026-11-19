@@ -5,7 +5,11 @@ import pandas as pd
 
 from Chairlift import Chairlift
 
-NOMBRE_LIFTS = 2
+NOMBRE_LIFTS = 3
+
+#TODO ligne 75 raise ValueError("can only convert an array of size 1 to a Python scalar")
+#TODO doit confirmer que les 2 sont choisi avant de peser sur le bouton
+#TODO n'update pas les comparaison quand reclique
 
 class SelectionLift(ctk.CTkFrame) :
 
@@ -166,9 +170,6 @@ class PageComparer(ctk.CTkFrame) :
             self.choix.append(SelectionLift(self, self.df_csv))
             self.choix[i].grid(row=2*(i+1), column=0)
 
-            self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
-            self.affichage_choix[i].grid(row=i, column=1)
-
         self.est_donnee_importee = False
 
         self.creer_widgets()
@@ -181,7 +182,18 @@ class PageComparer(ctk.CTkFrame) :
 
         for i in range(NOMBRE_LIFTS) :
             label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 20, "bold"))
-            label_lift.grid(row=2*i+1, column=0)
+            label_lift.grid(row=(2*i)+1, column=0)
+
+        self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
+        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0)
+
+    def quand_comparer(self) :
+        for i in range(NOMBRE_LIFTS) :
+            self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
+            self.affichage_choix[i].grid(row=2*i+2, column=1)
+
+        #TODO afficher les tabs de graphiques
+
 
     
     def quand_importer(self) :
