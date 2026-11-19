@@ -147,8 +147,14 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom, font=("Arial", 20, "bold"), text_color="#4a7ff7",)
         self.label_nom.grid(row=0, column=0)
 
+        self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Vitesse : {self.chairlift.obtenirVitesse()} m/s", text_color="#c8d1d9")
+        self.label_vitesse.grid(row=1, column=0)
 
+        self.label_personne_chaise = ctk.CTkLabel(self, text=f"\u00B7 {self.chairlift.obtenirNombreDePersonneParChaise()} personnes par chaise", text_color="#c8d1d9")
+        self.label_personne_chaise.grid(row=2, column=0)
 
+        self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Longueur du câble : {self.chairlift.obtenirVitesse()} m", text_color="#c8d1d9",)
+        self.label_nom.grid(row=3, column=0)
 
 
         
@@ -166,7 +172,7 @@ class PageComparer(ctk.CTkFrame) :
             self.choix.append(SelectionLift(self, self.df_csv, self.maj))
             self.choix[i].grid(row=2*(i+1), column=0)
 
-            self.affichage_choix.append(AfficherSelection())
+            self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
             self.affichage_choix[i].grid(row=i, column=1)
 
         self.est_donnee_importee = False
