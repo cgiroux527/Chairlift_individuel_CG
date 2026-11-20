@@ -179,12 +179,16 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {round(self.chairlift.calculerTempsTrajet(), 1)} s", text_color="#c8d1d9",)
         self.label_temps.grid(row=4, column=0)
 
+        self.label_capacite = ctk.CTkLabel(self, text=f"\u2192 Capacité : {self.get_capacite()} s", text_color="#4a7ff7", font=("Arial", 15))
+        self.label_capacite.grid(row=5, column=0)
+
     def get_capacite(self) :
         return self.chairlift.calculerNombreDePersonnesParHeure()
 
     def get_list_donnee(self) :
         #TODO verifications???
         return [self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
+
 
 class GraphEtoile(Frame) :
     def __init__(self, parent, df) :
@@ -211,7 +215,7 @@ class GraphEtoile(Frame) :
         self.axe.yticks([10,20,30], ["10","20","30"], color="grey", size=7)
         self.axe.ylim(0,40)
 
-    
+
         for i in range(NOMBRE_LIFTS) :
             valeurs = self.df_donnee.loc[i].drop('group').values.flatten().tolist()
             valeurs += valeurs[:1]
@@ -265,9 +269,10 @@ class PageComparer(ctk.CTkFrame) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
                 self.affichage_choix[i].grid(row=2*i+2, column=1)
 
-                #TODO afficher la capacité, couleur spéciale pour juste celui le plus grand!!!
 
             self.graph = GraphEtoile(self, self.creer_df_donnee())
+            self.graph.grid(row=0, column=2)
+            #TODO manque rowspan!
         else : 
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
 
