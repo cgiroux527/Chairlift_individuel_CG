@@ -1,9 +1,14 @@
-from tkinter import filedialog, messagebox, IntVar
+from tkinter import filedialog, messagebox, IntVar, Frame
+
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import customtkinter as ctk
 import pandas as pd
 
 from Chairlift import Chairlift
+
+from math import pi
 
 NOMBRE_LIFTS = 2
 
@@ -177,8 +182,48 @@ class AfficherSelection(ctk.CTkFrame) :
     def get_capacite(self) :
         return self.chairlift.calculerNombreDePersonnesParHeure()
 
+    def get_list_donnee(self) :
+        #TODO verifications???
+        return [self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
 
+class GraphEtoile(Frame) :
+    def __init__(self, parent, df) :
+        super().__init__(parent)
+        self.df_donnee = df
+
+        self.categories = list(self.df_donnee)[1:]
+        self.N = len(self.categories)
+
+        self.angles = [n / float(self.N) * 2 * pi for n in range(self.N)]
+        self.angles += self.angles[:1]
+
+        self.figure = Figure(figsize=(6, 3.5))
         
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self)
+        self.canvas.get_tk_widget().pack(fill="both", expand=True)
+        
+        self.axe = self.figure.add_subplot(111, polar=True)
+        self.axe.set_theta_offset(pi / 2)
+        self.axe.set_theta_direction(-1)
+
+        self.axe.xticks(self.angles[:-1], self.categories)
+        self.axe.set_rlabel_position(0)
+        self.axe.yticks([10,20,30], ["10","20","30"], color="grey", size=7)
+        self.axe.ylim(0,40)
+
+    
+        for i in range(NOMBRE_LIFTS) :
+            valeurs = self.df_donnee.loc[i].drop('group').values.flatten().tolist()
+            valeurs += valeurs[:1]
+            self.axe.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label="NOM")
+            self.axe.fill(self.angles, valeurs, 'COULEUR', alpha=0.1)
+            #TODO CHANGER POUR BIEN UTILISER LE DF...
+
+        self.axe.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+
+
+COLONNES = ["Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
+
 class PageComparer(ctk.CTkFrame) :
 
     def __init__(self, parent) :
@@ -222,10 +267,15 @@ class PageComparer(ctk.CTkFrame) :
 
                 #TODO afficher la capacité, couleur spéciale pour juste celui le plus grand!!!
 
-            #TODO afficher les graphiques
+            self.graph = GraphEtoile(self, self.creer_df_donnee())
         else : 
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
 
+    def creer_df_donnee(self) :
+        
+        resultat = pd.DataFrame() #TODO remplir le dataframe avec COLONNES et affichages_choix.get_list_donnee()
+
+        return resultat
 
     
     def quand_importer(self) :

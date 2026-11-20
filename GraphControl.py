@@ -2,7 +2,6 @@
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
-from Chairlift import Chairlift
 
 
 class GraphControl(tk.Frame):
