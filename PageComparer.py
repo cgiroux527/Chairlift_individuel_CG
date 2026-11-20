@@ -179,7 +179,7 @@ class AfficherSelection(ctk.CTkFrame) :
         self.label_temps = ctk.CTkLabel(self, text=f"\u00B7 Temps du trajet : {round(self.chairlift.calculerTempsTrajet(), 1)} s", text_color="#c8d1d9",)
         self.label_temps.grid(row=4, column=0)
 
-        self.label_capacite = ctk.CTkLabel(self, text=f"\u2192 Capacité : {self.get_capacite()} s", text_color="#4a7ff7", font=("Arial", 15))
+        self.label_capacite = ctk.CTkLabel(self, text=f"\u2192 Capacité : {self.get_capacite()} personnes par heure", text_color="#4a7ff7", font=("Arial", 15))
         self.label_capacite.grid(row=5, column=0)
 
     def get_capacite(self) :
@@ -187,13 +187,17 @@ class AfficherSelection(ctk.CTkFrame) :
 
     def get_list_donnee(self) :
         #TODO verifications???
-        return [self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
+        return [self.chairlift.nom, self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
 
-
-class GraphEtoile(Frame) :
+COULEURS = ["red", "blue", "green", "yellow"]
+class GraphCompare(Frame) :
     def __init__(self, parent, df) :
         super().__init__(parent)
         self.df_donnee = df
+
+        self.creer_graphe_etoile()
+
+    def creer_graphe_etoile(self) :
 
         self.categories = list(self.df_donnee)[1:]
         self.N = len(self.categories)
@@ -206,27 +210,39 @@ class GraphEtoile(Frame) :
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
         
-        self.axe = self.figure.add_subplot(111, polar=True)
-        self.axe.set_theta_offset(pi / 2)
-        self.axe.set_theta_direction(-1)
+        self.graph = self.figure.add_subplot(111, polar=True)
+        self.graph.set_theta_offset(pi / 2)
+        self.graph.set_theta_direction(-1)
 
-        self.axe.xticks(self.angles[:-1], self.categories)
-        self.axe.set_rlabel_position(0)
-        self.axe.yticks([10,20,30], ["10","20","30"], color="grey", size=7)
-        self.axe.ylim(0,40)
+        self.graph.set_xticks(self.angles[:-1], self.categories)
+        self.graph.set_rlabel_position(0)
+        self.graph.set_yticks([10,20,30], ["10","20","30"], color="grey", size=7)
+        self.graph.set_ylim(0,40)
 
 
-        for i in range(NOMBRE_LIFTS) :
-            valeurs = self.df_donnee.loc[i].drop('group').values.flatten().tolist()
+        for i in range(len(self.df_donnee)) :
+            valeurs = self.df_donnee.loc[i].drop("nom").values.flatten().tolist()
+            #Fermer le graphique en ajoutant la valeur de départ
             valeurs += valeurs[:1]
-            self.axe.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label="NOM")
-            self.axe.fill(self.angles, valeurs, 'COULEUR', alpha=0.1)
-            #TODO CHANGER POUR BIEN UTILISER LE DF...
+            nom = self.df_donnee.loc[i, "nom"]
+            self.graph.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label=nom)
+            self.graph.fill(self.angles, valeurs, COULEURS[i], alpha=0.1)
 
-        self.axe.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+        self.graph.legend(loc='upper left', bbox_to_anchor=(0.1, 0.1))
+        #TODO legende pas a bonne place
+        #TODO appeler la normalisation
+
+    def normaliser_donnees(self) :
+        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10 
+        for colonne in range(len(self.df_donnee.columns)) :
+            min = self.df_donnee[colonne].min()
+            max = self.df_donnee[colonne].max()
+            #TODO finir ça
 
 
-COLONNES = ["Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
+
+
+COLONNES = ["nom", "Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
 
 class PageComparer(ctk.CTkFrame) :
 
@@ -270,8 +286,8 @@ class PageComparer(ctk.CTkFrame) :
                 self.affichage_choix[i].grid(row=2*i+2, column=1)
 
 
-            self.graph = GraphEtoile(self, self.creer_df_donnee())
-            self.graph.grid(row=0, column=2)
+            self.graph = GraphCompare(self, self.creer_df_donnee())
+            self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+2)
             #TODO manque rowspan!
         else : 
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
