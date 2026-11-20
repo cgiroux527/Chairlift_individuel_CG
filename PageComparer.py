@@ -359,6 +359,5 @@ class PageComparer(ctk.CTkFrame) :
             self.affichage_choix = []
 
 
-
-
-#TODO frayeur de trop de vals dans le csv que je peux pas tester
+#TODO mieux filtrer
+#TODO trier en ordre alphabetique dans les option menu
