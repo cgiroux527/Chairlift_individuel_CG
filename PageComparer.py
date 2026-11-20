@@ -277,10 +277,11 @@ class PageComparer(ctk.CTkFrame) :
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
 
     def creer_df_donnee(self) :
-        
-        resultat = pd.DataFrame() #TODO remplir le dataframe avec COLONNES et affichages_choix.get_list_donnee()
+        listes = []
+        for i in range(NOMBRE_LIFTS) :
+            listes.append(self.affichage_choix[i].get_list_donnee())
 
-        return resultat
+        return pd.DataFrame(listes, columns=COLONNES)
 
     
     def quand_importer(self) :
