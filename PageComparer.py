@@ -10,7 +10,7 @@ from Chairlift import Chairlift
 
 from math import pi
 
-NOMBRE_LIFTS = 2
+NOMBRE_LIFTS = 4
 
 TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 5:4.0, 6: 4.0, 7:4.2, 8: 4.5, 9:5.0, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
 DIST_ENTRE_CHAISES_CSV = 20
@@ -38,11 +38,11 @@ class SelectionLift(ctk.CTkFrame) :
 
     def creer_widgets(self) :
         
-        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled")
-        self.radio_button_csv.grid(row=0, column=0)
+        self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled", radiobutton_height=15, radiobutton_width=15)
+        self.radio_button_csv.grid(row=0, column=0, padx=10, pady=3)
         
-        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2)
-        radio_choix_perso.grid(row=1, column=0)
+        radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2, radiobutton_height=15, radiobutton_width=15)
+        radio_choix_perso.grid(row=1, column=0, padx=10, pady=3)
 
 
     def quand_pays(self, choix) :
@@ -112,15 +112,15 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_perso = None
 
         self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].sort_values().unique().tolist())
-        self.option_pays.grid(row=2, column=0)
+        self.option_pays.grid(row=2, column=0, padx=10, pady=(2,3))
         self.option_pays.set("Pays")
 
         self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"])
-        self.option_region.grid(row=3, column=0)
+        self.option_region.grid(row=3, column=0, padx=10, pady=3)
         self.option_region.set("Region")
 
         self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"])
-        self.option_lift_csv.grid(row=4, column=0)
+        self.option_lift_csv.grid(row=4, column=0, padx=10, pady=3)
         self.option_lift_csv.set("Remontee")
     
     def quand_choix_perso(self) :
@@ -135,7 +135,7 @@ class SelectionLift(ctk.CTkFrame) :
         noms_chairlifts_cree = [lift.nom for lift in self.chairlifts_cree]
         noms_chairlifts_cree.sort()
         self.option_lift_perso = ctk.CTkOptionMenu(self, command=self.quand_lift_perso, values=["Aucune remontee cree"] if not self.chairlifts_cree else noms_chairlifts_cree)
-        self.option_lift_perso.grid(row=2, column=0)
+        self.option_lift_perso.grid(row=2, column=0, padx=10, pady=3)
         self.option_lift_perso.set("Remontee cree") 
 
     def quand_lift_perso(self, choix) :
@@ -235,7 +235,6 @@ class GraphCompare(Frame) :
             self.graph.fill(self.angles, valeurs, COULEURS[i], alpha=0.1)
 
         self.graph.legend(loc='upper left', bbox_to_anchor=(1, 1))
-        #TODO legende pas a bonne place
 
     def normaliser_donnees(self) :
         resultat = pd.DataFrame()
