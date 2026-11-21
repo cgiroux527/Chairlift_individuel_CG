@@ -58,7 +58,7 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_csv.configure(values=["Choisir une region"])
             self.option_lift_csv.set("Remontee")
             #Filtrer
-            self.option_region.configure(values=self.df.loc[self.df["countries"] == self.choix_pays, "regions"].unique().tolist())
+            self.option_region.configure(values=self.df.loc[self.df["countries"] == self.choix_pays, "regions"].sort_values().unique().tolist())
 
             self.est_choisi = False
 
@@ -73,7 +73,7 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_csv.configure(values=["Choisir une region"])
             self.option_lift_csv.set("Remontee")
             #Filtrer
-            self.option_lift_csv.configure(values=self.df.loc[self.df["regions"] == self.choix_region, "name"].unique().tolist())
+            self.option_lift_csv.configure(values=self.df.loc[self.df["regions"] == self.choix_region, "name"].sort_values().unique().tolist())
 
             self.est_choisi = False
 
@@ -111,7 +111,7 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_perso.destroy()
             self.option_lift_perso = None
 
-        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].unique().tolist())
+        self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].sort_values().unique().tolist())
         self.option_pays.grid(row=2, column=0)
         self.option_pays.set("Pays")
 
@@ -133,6 +133,7 @@ class SelectionLift(ctk.CTkFrame) :
 
         self.chairlifts_cree = self.master.master.get_chairlifts()
         noms_chairlifts_cree = [lift.nom for lift in self.chairlifts_cree]
+        noms_chairlifts_cree.sort()
         self.option_lift_perso = ctk.CTkOptionMenu(self, command=self.quand_lift_perso, values=["Aucune remontee cree"] if not self.chairlifts_cree else noms_chairlifts_cree)
         self.option_lift_perso.grid(row=2, column=0)
         self.option_lift_perso.set("Remontee cree") 
@@ -288,7 +289,6 @@ class PageComparer(ctk.CTkFrame) :
 
             self.graph = GraphCompare(self, self.creer_df_donnee())
             self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+2)
-            #TODO manque rowspan!
         else : 
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
 
@@ -351,6 +351,9 @@ class PageComparer(ctk.CTkFrame) :
             #Enlever les faux noms de chairlifts 
             condition_nom_court = self.df_csv["name"].str.len() > 3
             self.df_csv = self.df_csv[condition_nom_court]
+
+            condition_occupancy = (self.df_csv["occupancy"] >= 2) & (self.df_csv["occupancy"] <= 10)
+            self.df_csv = self.df_csv[condition_occupancy]
 
             self.est_donnee_importee = True
 
