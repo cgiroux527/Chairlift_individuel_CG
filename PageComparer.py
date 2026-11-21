@@ -188,19 +188,21 @@ class AfficherSelection(ctk.CTkFrame) :
 
     def get_list_donnee(self) :
         #TODO verifications???
-        return [self.chairlift.nom, self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
+        return [self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
+
 
 COULEURS = ["red", "blue", "green", "yellow"]
 class GraphCompare(Frame) :
-    def __init__(self, parent, df) :
+    def __init__(self, parent, df, noms) :
         super().__init__(parent)
         self.df_donnee = df
+        self.noms = noms
 
         self.creer_graphe_etoile()
 
     def creer_graphe_etoile(self) :
 
-        self.categories = list(self.df_donnee)[1:]
+        self.categories = list(self.df_donnee)
         self.N = len(self.categories)
 
         self.angles = [n / float(self.N) * 2 * pi for n in range(self.N)]
@@ -220,30 +222,41 @@ class GraphCompare(Frame) :
         self.graph.set_yticks([10,20,30], ["10","20","30"], color="grey", size=7)
         self.graph.set_ylim(0,40)
 
-
+        normalisee = self.normaliser_donnees()
         for i in range(len(self.df_donnee)) :
-            valeurs = self.df_donnee.loc[i].drop("nom").values.flatten().tolist()
-            #Fermer le graphique en ajoutant la valeur de départ
+            valeurs = normalisee.iloc[i].values.flatten().tolist()
+            #Fermer la ligne sur le graphique en ajoutant la valeur de départ
             valeurs += valeurs[:1]
-            nom = self.df_donnee.loc[i, "nom"]
+            nom = self.noms[i]
             self.graph.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label=nom)
             self.graph.fill(self.angles, valeurs, COULEURS[i], alpha=0.1)
 
         self.graph.legend(loc='upper left', bbox_to_anchor=(0.1, 0.1))
         #TODO legende pas a bonne place
-        #TODO appeler la normalisation
 
     def normaliser_donnees(self) :
         #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10 
-        for colonne in range(len(self.df_donnee.columns)) :
-            min = self.df_donnee[colonne].min()
-            max = self.df_donnee[colonne].max()
-            #TODO finir ça
+        resultat = pd.DataFrame()
+        for colonne in self.df_donnee.columns :
+            series_x = self.df_donnee.loc[:, colonne]
+            resultat[colonne] = self.normaliser_x(series_x, series_x.min(), series_x.max())
+
+        return resultat
+            
+    def normaliser_x(self, x, min, max) :
+        if min != max :
+            return (x-min)/(max-min)*10
+        else :
+            #5 de 10, car ils sont pareils
+            serie_5 = []
+            for _ in range(NOMBRE_LIFTS) :
+                serie_5.append(5.0)
+            return serie_5
 
 
 
 
-COLONNES = ["nom", "Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
+COLONNES = ["Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
 
 class PageComparer(ctk.CTkFrame) :
 
@@ -282,12 +295,13 @@ class PageComparer(ctk.CTkFrame) :
 
             self.detruire_affichages()
 
+            noms = []
             for i in range(NOMBRE_LIFTS) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift))
                 self.affichage_choix[i].grid(row=2*i+2, column=1)
+                noms.append(self.affichage_choix[i].chairlift.nom)
 
-
-            self.graph = GraphCompare(self, self.creer_df_donnee())
+            self.graph = GraphCompare(self, self.creer_df_donnee(), noms)
             self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+2)
         else : 
             messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
