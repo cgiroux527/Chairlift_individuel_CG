@@ -192,6 +192,9 @@ class AfficherSelection(ctk.CTkFrame) :
 
 
 COULEURS = ["red", "blue", "green", "yellow"]
+
+COLONNES = ["Vitesse", "Taille chaise", "Longueur câble", "Temps trajet", "Capacité"]
+BORNES = dict(zip(COLONNES, [[1,10], [1, 10], [1, 9000], [1, 1500], [1, 3000]])) #Trouvé avec les maximums du csv et en faisant des tests de création
 class GraphCompare(Frame) :
     def __init__(self, parent, df, noms) :
         super().__init__(parent)
@@ -208,7 +211,7 @@ class GraphCompare(Frame) :
         self.angles = [n / float(self.N) * 2 * pi for n in range(self.N)]
         self.angles += self.angles[:1]
 
-        self.figure = Figure(figsize=(6, 3.5))
+        self.figure = Figure(figsize=(7, 5))
         
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
@@ -219,8 +222,8 @@ class GraphCompare(Frame) :
 
         self.graph.set_xticks(self.angles[:-1], self.categories)
         self.graph.set_rlabel_position(0)
-        self.graph.set_yticks([10,20,30], ["10","20","30"], color="grey", size=7)
-        self.graph.set_ylim(0,40)
+        self.graph.set_yticks([2,4,6,8,10], ["2","4","6","8","10"], color="grey", size=7)
+        self.graph.set_ylim(0,10)
 
         normalisee = self.normaliser_donnees()
         for i in range(len(self.df_donnee)) :
@@ -231,32 +234,21 @@ class GraphCompare(Frame) :
             self.graph.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label=nom)
             self.graph.fill(self.angles, valeurs, COULEURS[i], alpha=0.1)
 
-        self.graph.legend(loc='upper left', bbox_to_anchor=(0.1, 0.1))
+        self.graph.legend(loc='upper left', bbox_to_anchor=(1, 1))
         #TODO legende pas a bonne place
 
     def normaliser_donnees(self) :
-        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10 
         resultat = pd.DataFrame()
         for colonne in self.df_donnee.columns :
             series_x = self.df_donnee.loc[:, colonne]
-            resultat[colonne] = self.normaliser_x(series_x, series_x.min(), series_x.max())
-
+            resultat[colonne] = self.normaliser_x(series_x, BORNES[colonne][0], BORNES[colonne][1])
         return resultat
             
     def normaliser_x(self, x, min, max) :
-        if min != max :
-            return (x-min)/(max-min)*10
-        else :
-            #5 de 10, car ils sont pareils
-            serie_5 = []
-            for _ in range(NOMBRE_LIFTS) :
-                serie_5.append(5.0)
-            return serie_5
+        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10 
+        return (x-min)/(max-min)*10
 
 
-
-
-COLONNES = ["Vitesse", "Personnes par chaise", "Longueur câble", "Temps trajet", "Capacité"]
 
 class PageComparer(ctk.CTkFrame) :
 
