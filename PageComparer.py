@@ -10,7 +10,7 @@ from Chairlift import Chairlift
 
 from math import pi
 
-NOMBRE_LIFTS = 4
+NOMBRE_LIFTS = 3
 
 TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 5:4.0, 6: 4.0, 7:4.2, 8: 4.5, 9:5.0, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
 DIST_ENTRE_CHAISES_CSV = 20
@@ -43,6 +43,9 @@ class SelectionLift(ctk.CTkFrame) :
         
         radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2, radiobutton_height=15, radiobutton_width=15)
         radio_choix_perso.grid(row=1, column=0, padx=10, pady=3)
+
+        for i in range(2*NOMBRE_LIFTS+2) :
+            self.grid_rowconfigure(i, weight=1)
 
 
     def quand_pays(self, choix) :
@@ -266,6 +269,9 @@ class PageComparer(ctk.CTkFrame) :
         self.est_donnee_importee = False
 
         self.creer_widgets()
+
+        for i in range(3) :
+            self.grid_columnconfigure(i, weight=1)
 
     
     def creer_widgets(self) :
