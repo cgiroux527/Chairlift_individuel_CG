@@ -10,7 +10,9 @@ from Chairlift import Chairlift
 
 from math import pi
 
-NOMBRE_LIFTS = 4
+import csv
+
+NOMBRE_LIFTS = 2
 
 TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 5:4.0, 6: 4.0, 7:4.2, 8: 4.5, 9:5.0, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
 DIST_ENTRE_CHAISES_CSV = 20
@@ -187,7 +189,6 @@ class AfficherSelection(ctk.CTkFrame) :
         return self.chairlift.calculerNombreDePersonnesParHeure()
 
     def get_list_donnee(self) :
-        #TODO verifications???
         return [self.chairlift.obtenirVitesse(), self.chairlift.obtenirNombreDePersonnesParChaise(), self.chairlift.obtenirLongueurDuTrajet(), self.chairlift.calculerTempsTrajet(), self.get_capacite()]
 
 
@@ -299,10 +300,13 @@ class PageComparer(ctk.CTkFrame) :
                 noms.append(self.affichage_choix[i].chairlift.nom)
 
             self.graph = GraphCompare(self, self.creer_df_donnee(), noms)
-            self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+2, sticky="nsew")
+            self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+1, sticky="nsew")
 
+            self.bouton_exporter = ctk.CTkButton(self, text="Exporter", command=self.quand_exporter)
+            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+2, column=2, sticky="ns")
+      
         else : 
-            messagebox.showerror("Erreur ", "Choisir au moins 2 remontées pour les comparer")
+            messagebox.showerror("Erreur ", f"Choisir au moins {NOMBRE_LIFTS} remontées pour les comparer")
 
     def creer_df_donnee(self) :
         listes = []
@@ -311,14 +315,23 @@ class PageComparer(ctk.CTkFrame) :
 
         return pd.DataFrame(listes, columns=COLONNES)
 
-    
+    def quand_exporter(self) :
+        chemin_exporter = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("Fichiers CSV", "*.csv")])
+        
+        try :
+            df_exporter = self.creer_df_donnee()
+            df_exporter.to_csv(chemin_exporter)
+            messagebox.showinfo(title="Reussite", message=f"Fichier a été exporté à : {chemin_exporter}")
+        except Exception as erreur:
+            messagebox.showerror("Erreur d'exportation", f"Erreur inattendue : {erreur}")
+
     def quand_importer(self) :
-        self.chemin = filedialog.askopenfilename(defaultextension=".csv",
-        filetypes=[("Fichiers CSV", "*.csv")])
-        if self.chemin:
+        self.chemin_importer = filedialog.askopenfilename(defaultextension=".csv", filetypes=[("Fichiers CSV", "*.csv")])
+        if self.chemin_importer:
             try :
                 self.importer()
                 if self.est_donnee_importee :
+                    messagebox.showinfo(title="Réussite", message=f"Le fichier suivant a bien été importé \n {self.chemin_importer} ")
                     for choix in self.choix:
                         choix.radio_button_csv.configure(state="normal")
                         choix.df = self.df_csv
@@ -331,7 +344,7 @@ class PageComparer(ctk.CTkFrame) :
     def importer(self) :
         
         try :
-            self.df_csv = pd.read_csv(self.chemin)
+            self.df_csv = pd.read_csv(self.chemin_importer)
             
             self.df_csv = self.df_csv.drop_duplicates()
 
@@ -390,5 +403,5 @@ class PageComparer(ctk.CTkFrame) :
                     continue
             self.affichage_choix = []
 
-
 #TODO mieux filtrer
+#TODO virgule au debut du truc d'import
