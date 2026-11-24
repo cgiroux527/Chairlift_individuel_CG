@@ -7,10 +7,13 @@ import customtkinter as ctk
 import pandas as pd
 
 from Chairlift import Chairlift
+from Accueil import Accueil
 
 from math import pi
 
 import csv
+
+from PIL import Image
 
 NOMBRE_LIFTS = 2
 
@@ -23,7 +26,7 @@ class SelectionLift(ctk.CTkFrame) :
 
     def __init__(self, parent, df) :
 
-        super().__init__(parent)
+        super().__init__(parent, fg_color="transparent")
 
         self.chairlift = Chairlift()
 
@@ -41,10 +44,10 @@ class SelectionLift(ctk.CTkFrame) :
     def creer_widgets(self) :
         
         self.radio_button_csv = ctk.CTkRadioButton(self, text="Depuis le CSV importé", command=self.quand_choix_csv, variable=self.radio_var, value=1, state="disabled", radiobutton_height=15, radiobutton_width=15)
-        self.radio_button_csv.grid(row=0, column=0, padx=10, pady=3, sticky="nsw")
+        self.radio_button_csv.grid(row=0, column=0, padx=10, pady=3, sticky="nsew")
         
         radio_choix_perso = ctk.CTkRadioButton(self, text="Chairlift personnalisé", command=self.quand_choix_perso, variable=self.radio_var, value=2, radiobutton_height=15, radiobutton_width=15)
-        radio_choix_perso.grid(row=1, column=0, padx=10, pady=3, sticky="nsw")
+        radio_choix_perso.grid(row=1, column=0, padx=10, pady=3, sticky="nsew")
 
 
     def quand_pays(self, choix) :
@@ -114,15 +117,15 @@ class SelectionLift(ctk.CTkFrame) :
             self.option_lift_perso = None
 
         self.option_pays = ctk.CTkOptionMenu(self, command=self.quand_pays, values=self.df["countries"].sort_values().unique().tolist())
-        self.option_pays.grid(row=2, column=0, padx=10, pady=(2,3), sticky="nsw")
+        self.option_pays.grid(row=2, column=0, padx=10, pady=(2,3), sticky="nsew")
         self.option_pays.set("Pays")
 
         self.option_region = ctk.CTkOptionMenu(self, command=self.quand_region, values=["Choisir un pays"])
-        self.option_region.grid(row=3, column=0, padx=10, pady=3, sticky="nsw")
+        self.option_region.grid(row=3, column=0, padx=10, pady=3, sticky="nsew")
         self.option_region.set("Region")
 
         self.option_lift_csv = ctk.CTkOptionMenu(self, command=self.quand_lift_csv, values=["Choisir une region"])
-        self.option_lift_csv.grid(row=4, column=0, padx=10, pady=3, sticky="nsw")
+        self.option_lift_csv.grid(row=4, column=0, padx=10, pady=3, sticky="nsew")
         self.option_lift_csv.set("Remontee")
     
     def quand_choix_perso(self) :
@@ -137,7 +140,7 @@ class SelectionLift(ctk.CTkFrame) :
         noms_chairlifts_cree = [lift.nom for lift in self.chairlifts_cree]
         noms_chairlifts_cree.sort()
         self.option_lift_perso = ctk.CTkOptionMenu(self, command=self.quand_lift_perso, values=["Aucune remontee cree"] if not self.chairlifts_cree else noms_chairlifts_cree)
-        self.option_lift_perso.grid(row=2, column=0, padx=10, pady=3, sticky="nsw")
+        self.option_lift_perso.grid(row=2, column=0, padx=10, pady=3, sticky="nsew")
         self.option_lift_perso.set("Remontee cree") 
 
     def quand_lift_perso(self, choix) :
@@ -160,7 +163,7 @@ class SelectionLift(ctk.CTkFrame) :
 class AfficherSelection(ctk.CTkFrame) :
 
     def __init__(self, parent, chairlift, indice) :
-        super().__init__(parent)
+        super().__init__(parent, fg_color="transparent")
 
         self.chairlift = chairlift
         self.indice = indice
@@ -254,7 +257,7 @@ class PageComparer(ctk.CTkFrame) :
 
     def __init__(self, parent) :
 
-        super().__init__(parent)
+        super().__init__(parent, fg_color="transparent")
 
         self.df_csv = pd.DataFrame()
 
@@ -262,14 +265,15 @@ class PageComparer(ctk.CTkFrame) :
         self.affichage_choix = []
         for i in range(NOMBRE_LIFTS) :
             self.choix.append(SelectionLift(self, self.df_csv))
-            self.choix[i].grid(row=2*(i+1), column=0, sticky="nsw")
+            self.choix[i].grid(row=2*(i+1), column=0, sticky="nsew")
 
         self.est_donnee_importee = False
 
         self.creer_widgets()
 
-        for i in range(3) :
-            self.grid_columnconfigure(i, weight=1)
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=3)
 
         for i in range(2*NOMBRE_LIFTS+2) :
             self.grid_rowconfigure(i, weight=1)
@@ -277,15 +281,27 @@ class PageComparer(ctk.CTkFrame) :
     
     def creer_widgets(self) :
         #Bouton importer 
-        self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
-        self.bouton_donnee.grid(row=0, column=0, sticky="nsw", pady=(3,15), padx=10)
+        frame_coin_gauche = ctk.CTkFrame(self, fg_color="transparent")
+        frame_coin_gauche.grid(row=0, column= 0, sticky="nsew")
+        frame_coin_gauche.grid_columnconfigure(0, weight=0)
+        frame_coin_gauche.grid_columnconfigure(1, weight=1)
+
+        image_accueil = ctk.CTkImage(light_image=Image.open("maison.png"), size=(17,17))
+        self.bouton_accueil = ctk.CTkButton(frame_coin_gauche, image=image_accueil, text="", fg_color="transparent", hover=False, command=self.quand_accueil, width=30, height=30,)
+        self.bouton_accueil.grid(row=0, column=0, sticky="w", pady=5, padx=(10,5))
+
+        self.bouton_donnee = ctk.CTkButton(frame_coin_gauche, text="Choisir base donnée", command=self.quand_importer)
+        self.bouton_donnee.grid(row=0, column=1, sticky="ew", pady=5, padx=(5,10))
 
         for i in range(NOMBRE_LIFTS) :
             label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"), text_color=COULEURS[i])
-            label_lift.grid(row=(2*i)+1, column=0, sticky="nsw")
+            label_lift.grid(row=(2*i)+1, column=0, sticky="nsew")
 
         self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
-        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0, sticky="nsw", pady=(15,3), padx=10)
+        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0, sticky="ns", pady=(15,3), padx=10)
+
+    def quand_accueil(self) :
+        self.master.changer_page(Accueil)
 
     def quand_comparer(self) :
         
@@ -303,7 +319,7 @@ class PageComparer(ctk.CTkFrame) :
             self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+1, sticky="nsew")
 
             self.bouton_exporter = ctk.CTkButton(self, text="Exporter le DataFrame", command=self.quand_exporter)
-            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+1, column=2, sticky="ns")
+            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+1, column=2, sticky="ns", pady=(10,15), padx=10)
       
         else : 
             messagebox.showerror("Erreur ", f"Choisir au moins {NOMBRE_LIFTS} remontées pour les comparer")
