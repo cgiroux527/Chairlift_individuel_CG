@@ -303,7 +303,7 @@ class PageComparer(ctk.CTkFrame) :
             self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+1, sticky="nsew")
 
             self.bouton_exporter = ctk.CTkButton(self, text="Exporter le DataFrame", command=self.quand_exporter)
-            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+2, column=2, sticky="ns")
+            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+1, column=2, sticky="ns")
       
         else : 
             messagebox.showerror("Erreur ", f"Choisir au moins {NOMBRE_LIFTS} remontées pour les comparer")
