@@ -278,14 +278,14 @@ class PageComparer(ctk.CTkFrame) :
     def creer_widgets(self) :
         #Bouton importer 
         self.bouton_donnee = ctk.CTkButton(self, text="Choisir base donnée", command=self.quand_importer)
-        self.bouton_donnee.grid(row=0, column=0, sticky="nsw")
+        self.bouton_donnee.grid(row=0, column=0, sticky="nsw", pady=(3,15), padx=10)
 
         for i in range(NOMBRE_LIFTS) :
             label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"))
             label_lift.grid(row=(2*i)+1, column=0, sticky="nsw")
 
         self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
-        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0, sticky="nsw")
+        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0, sticky="nsw", pady=(15,3), padx=10)
 
     def quand_comparer(self) :
         
