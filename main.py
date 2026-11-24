@@ -47,7 +47,7 @@ class MainApp(ctk.CTk) :
     
 #Loop du MainApp et choix de l'apparence du ctk
 if __name__ == "__main__" :
-    ctk.set_appearance_mode("system")
+    ctk.set_appearance_mode("light")
     ctk.set_default_color_theme("dark-blue")
     application = MainApp()
     application.mainloop()
