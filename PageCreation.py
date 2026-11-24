@@ -1,4 +1,4 @@
-from tkinter import IntVar, filedialog
+from tkinter import IntVar, filedialog, messagebox
 
 import customtkinter as ctk
 
@@ -385,5 +385,9 @@ class PageCreation(ctk.CTkFrame) :
 
     def _creer_lift(self) :
         nom = self.sliders.get_entry_nom()
-        self.__chairlift.definirNom(nom)
-        self.master.changer_page(Accueil)
+
+        if len(nom) > 0 : 
+            self.__chairlift.definirNom(nom)
+            self.master.changer_page(Accueil)
+        else :
+            messagebox.showwarning(title="Erreur", message="Veuillez entrer un nom pour la remontée créée")
