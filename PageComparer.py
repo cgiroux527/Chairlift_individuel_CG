@@ -15,12 +15,8 @@ import csv
 
 from PIL import Image
 
-NOMBRE_LIFTS = 2
-
 TEMPS_EMBARQUEMENTS_CSV = {2: 3.0, 3: 3.2, 4: 3.6, 5:4.0, 6: 4.0, 7:4.2, 8: 4.5, 9:5.0, 10: 5.0} #Calcul approximatif basé sur moyennes pour pouvoir utiliser la classe Chairlift (Temps d'embarquement). source : https://www.strmtg.developpement-durable.gouv.fr/en/chairlift-continuous-movement-unidirectional-a131.html?lang=en
 DIST_ENTRE_CHAISES_CSV = 20
-
-#TODO 216
 
 class SelectionLift(ctk.CTkFrame) :
 
@@ -200,6 +196,7 @@ COULEURS = ["red", "blue", "green", "yellow"]
 
 COLONNES = ["Vitesse", "Taille chaise", "Longueur câble", "Temps trajet", "Capacité"]
 BORNES = dict(zip(COLONNES, [[1,10], [1, 10], [1, 9000], [1, 1500], [1, 3000]])) #Trouvé avec les maximums du csv et en faisant des tests de création
+
 class GraphCompare(Frame) :
     def __init__(self, parent, df, noms) :
         super().__init__(parent)
@@ -252,7 +249,6 @@ class GraphCompare(Frame) :
         return (x-min)/(max-min)*10
 
 
-
 class PageComparer(ctk.CTkFrame) :
 
     def __init__(self, parent) :
@@ -261,9 +257,11 @@ class PageComparer(ctk.CTkFrame) :
 
         self.df_csv = pd.DataFrame()
 
+        self.nb_observer = self.master.nb_lift
+
         self.choix = []
         self.affichage_choix = []
-        for i in range(NOMBRE_LIFTS) :
+        for i in range(self.nb_observer) :
             self.choix.append(SelectionLift(self, self.df_csv))
             self.choix[i].grid(row=2*(i+1), column=0, sticky="nsew")
 
@@ -275,7 +273,7 @@ class PageComparer(ctk.CTkFrame) :
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=3)
 
-        for i in range(2*NOMBRE_LIFTS+2) :
+        for i in range(2*self.nb_observer+2) :
             self.grid_rowconfigure(i, weight=1)
 
     
@@ -293,12 +291,12 @@ class PageComparer(ctk.CTkFrame) :
         self.bouton_donnee = ctk.CTkButton(frame_coin_gauche, text="Choisir base donnée", command=self.quand_importer)
         self.bouton_donnee.grid(row=0, column=1, sticky="ew", pady=5, padx=(5,10))
 
-        for i in range(NOMBRE_LIFTS) :
+        for i in range(self.nb_observer) :
             label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"), text_color=COULEURS[i])
             label_lift.grid(row=(2*i)+1, column=0, sticky="nsew")
 
         self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
-        self.bouton_comparer.grid(row=2*NOMBRE_LIFTS+1, column=0, sticky="ns", pady=(15,3), padx=10)
+        self.bouton_comparer.grid(row=2*self.nb_observer+1, column=0, sticky="ns", pady=(15,3), padx=10)
 
     def quand_accueil(self) :
         self.master.changer_page(Accueil)
@@ -310,23 +308,23 @@ class PageComparer(ctk.CTkFrame) :
             self.detruire_affichages()
 
             noms = []
-            for i in range(NOMBRE_LIFTS) :
+            for i in range(self.nb_observer) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift, i))
                 self.affichage_choix[i].grid(row=2*i+2, column=1)
                 noms.append(self.affichage_choix[i].chairlift.nom)
 
             self.graph = GraphCompare(self, self.creer_df_donnee(), noms)
-            self.graph.grid(row=0, column=2, rowspan=2*NOMBRE_LIFTS+1, sticky="nsew")
+            self.graph.grid(row=0, column=2, rowspan=2*self.nb_observer+1, sticky="nsew")
 
             self.bouton_exporter = ctk.CTkButton(self, text="Exporter le DataFrame", command=self.quand_exporter)
-            self.bouton_exporter.grid(row=2*NOMBRE_LIFTS+1, column=2, sticky="ns", pady=(10,15), padx=10)
+            self.bouton_exporter.grid(row=2*self.nb_observer+1, column=2, sticky="ns", pady=(10,15), padx=10)
       
         else : 
-            messagebox.showerror("Erreur ", f"Choisir au moins {NOMBRE_LIFTS} remontées pour les comparer")
+            messagebox.showerror("Erreur ", f"Choisir au moins {self.nb_observer} remontées pour les comparer")
 
     def creer_df_donnee(self) :
         listes = []
-        for i in range(NOMBRE_LIFTS) :
+        for i in range(self.nb_observer) :
             listes.append(self.affichage_choix[i].get_list_donnee())
 
         return pd.DataFrame(listes, columns=COLONNES)
@@ -404,7 +402,7 @@ class PageComparer(ctk.CTkFrame) :
         self.df_csv = self.df_csv.reset_index(drop=True)
 
     def pret_a_comparer(self) :
-        for i in range(NOMBRE_LIFTS):
+        for i in range(self.nb_observer):
             if not self.choix[i].est_choisi:
                 return False
 
@@ -412,7 +410,7 @@ class PageComparer(ctk.CTkFrame) :
 
     def detruire_affichages(self) :
         if len(self.affichage_choix) > 0 :
-            for i in range(NOMBRE_LIFTS) :
+            for i in range(self.nb_observer) :
                 if self.affichage_choix[i] :
                     self.affichage_choix[i].destroy()
                 else :
