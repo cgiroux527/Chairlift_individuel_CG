@@ -233,7 +233,7 @@ class GraphCompare(ctk.CTkFrame) :
         for conteneur in complet.bar_containers:
             graph.bar_label(conteneur, padding=3, fmt="%.2f")
         
-        graph.set_ylim(0, 13)
+        graph.set_ylim(0, 10)
 
 
     def creer_graphe_etoile(self) :
@@ -255,7 +255,7 @@ class GraphCompare(ctk.CTkFrame) :
         graph.set_xticks(angles[:-1], self.categories)
         graph.set_rlabel_position(0)
         graph.set_yticks([2,4,6,8,10], ["2","4","6","8","10"], color="grey", size=7)
-        graph.set_ylim(0,13)
+        graph.set_ylim(0,10)
 
         for i in range(len(self.df_donnee)) :
             valeurs = self.normalisee.iloc[i].values.flatten().tolist()
@@ -273,8 +273,11 @@ class GraphCompare(ctk.CTkFrame) :
         return resultat
             
     def normaliser_x(self, x, min, max) :
-        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10 
-        return (x-min)/(max-min)*10
+        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10
+        if x <= max :
+            return (x-min)/(max-min)*10
+        else :
+            return 10
 
 
 class PageComparer(ctk.CTkFrame) :
@@ -309,9 +312,6 @@ class PageComparer(ctk.CTkFrame) :
         #Bouton importer 
         frame_coin_gauche = ctk.CTkFrame(self, fg_color="transparent")
         frame_coin_gauche.grid(row=0, column= 0, sticky="nsew")
-        frame_coin_gauche.grid_columnconfigure(0, weight=0)
-        frame_coin_gauche.grid_columnconfigure(1, weight=1)
-        frame_coin_gauche.grid_columnconfigure(2, weight=2)
 
         image_accueil = ctk.CTkImage(light_image=Image.open("maison.png"), size=(17,17))
         self.bouton_accueil = ctk.CTkButton(frame_coin_gauche, image=image_accueil, text="", fg_color="transparent", hover=False, command=self.quand_accueil, width=30, height=30,)
@@ -374,7 +374,7 @@ class PageComparer(ctk.CTkFrame) :
             try :
                 self.importer()
                 if self.est_donnee_importee :
-                    messagebox.showinfo(title="Réussite", message=f"Le fichier suivant a bien été importé \n {self.chemin_importer} ")
+                    messagebox.showinfo(title="Réussite", message=f"Le fichier suivant a bien été importé \n {self.chemin_importer} \n Certaines données peuvent avoir été supprimées pour le bon fonctionnement du comparateur")
                     for choix in self.choix:
                         choix.radio_button_csv.configure(state="normal")
                         choix.df = self.df_csv
@@ -391,7 +391,7 @@ class PageComparer(ctk.CTkFrame) :
             
             self.df_csv = self.df_csv.drop_duplicates()
 
-            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "ski_area_names", "duration_sec", "capacity", "speed_m_per_s","occupancy","lift_type", "inclined_length_m", "vertical_m"]]
+            self.df_csv = self.df_csv.loc[:,["name", "countries", "regions", "duration_sec", "capacity", "speed_m_per_s","occupancy", "inclined_length_m"]]
 
             self.df_csv = self.df_csv.dropna()
 
@@ -446,5 +446,4 @@ class PageComparer(ctk.CTkFrame) :
                     continue
             self.affichage_choix = []
 
-#TODO mieux filtrer
-#TODO virgule au debut du truc d'import
+#TODO virgule au debut du truc d'export
