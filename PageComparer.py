@@ -210,8 +210,11 @@ class GraphCompare(ctk.CTkFrame) :
 
     def creer_widgets(self) :
         #creer la tabview et placer les deux dedans 
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         self.tabs_graphs = ctk.CTkTabview(self)
-        self.tabs_graphs.grid(padx=20, pady=20)
+        self.tabs_graphs.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
         self.tabs_graphs.add("1 - Barres") 
         self.tabs_graphs.add("2 - Radar")  
@@ -221,7 +224,7 @@ class GraphCompare(ctk.CTkFrame) :
         self.creer_graphe_etoile()
 
     def creer_graphe_bar(self) :
-        figure = Figure(figsize=(7, 5))
+        figure = Figure(figsize=(7, 5), layout="constrained")
         
         canvas = FigureCanvasTkAgg(figure, master=self.tabs_graphs.tab("1 - Barres"))
         canvas.get_tk_widget().pack(fill="both", expand=True)
@@ -243,7 +246,7 @@ class GraphCompare(ctk.CTkFrame) :
         angles = [n / float(N) * 2 * pi for n in range(N)]
         angles += angles[:1]
 
-        figure = Figure(figsize=(7, 5))
+        figure = Figure(figsize=(7, 5), layout="constrained")
         
         canvas = FigureCanvasTkAgg(figure, master=self.tabs_graphs.tab("2 - Radar"))
         canvas.get_tk_widget().pack(fill="both", expand=True)
@@ -261,7 +264,7 @@ class GraphCompare(ctk.CTkFrame) :
             valeurs = self.normalisee.iloc[i].values.flatten().tolist()
             #Fermer la ligne sur le graphique en ajoutant la valeur de départ
             valeurs += valeurs[:1]
-            graph.plot(angles, valeurs, linewidth=1, linestyle='solid') 
+            graph.plot(angles, valeurs, linewidth=1, linestyle='solid', color=COULEURS[i]) 
             graph.fill(angles, valeurs, COULEURS[i], alpha=0.1)
 
 
@@ -269,15 +272,13 @@ class GraphCompare(ctk.CTkFrame) :
         resultat = pd.DataFrame()
         for colonne in self.df_donnee.columns :
             series_x = self.df_donnee.loc[:, colonne]
-            resultat[colonne] = self.normaliser_x(series_x, BORNES[colonne][0], BORNES[colonne][1])
+            resultat[colonne] = normaliser_x(series_x, BORNES[colonne][0], BORNES[colonne][1])
         return resultat
-            
-    def normaliser_x(self, x, min, max) :
-        #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10
-        if x <= max :
-            return (x-min)/(max-min)*10
-        else :
-            return 10
+
+
+def normaliser_x(x, min, max) :
+    #Formule : (x-xmin)/(xmax-xmin) *10 -> c'est donc sur un total de 10
+        return ((x-min)/(max-min)*10).clip(lower=0, upper=10)
 
 
 class PageComparer(ctk.CTkFrame) :
@@ -292,9 +293,6 @@ class PageComparer(ctk.CTkFrame) :
 
         self.choix = []
         self.affichage_choix = []
-        for i in range(self.nb_observer) :
-            self.choix.append(SelectionLift(self, self.df_csv))
-            self.choix[i].grid(row=2*(i+1), column=0, sticky="nsew")
 
         self.est_donnee_importee = False
 
@@ -304,8 +302,9 @@ class PageComparer(ctk.CTkFrame) :
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=3)
 
-        for i in range(2*self.nb_observer+2) :
-            self.grid_rowconfigure(i, weight=1)
+        for i in range(2*self.nb_observer+3) :
+            self.grid_rowconfigure(i, weight=0)
+        #self.grid_rowconfigure(2*self.nb_observer+2, weight=1)
 
     
     def creer_widgets(self) :
@@ -319,6 +318,10 @@ class PageComparer(ctk.CTkFrame) :
 
         self.bouton_donnee = ctk.CTkButton(frame_coin_gauche, text="Choisir base donnée", command=self.quand_importer)
         self.bouton_donnee.grid(row=0, column=1, sticky="ew", pady=5, padx=(5,10))
+
+        for i in range(self.nb_observer) :
+            self.choix.append(SelectionLift(self, self.df_csv))
+            self.choix[i].grid(row=2*(i+1), column=0, sticky="nsew")
 
         for i in range(self.nb_observer) :
             label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"), text_color=COULEURS[i])
@@ -339,14 +342,14 @@ class PageComparer(ctk.CTkFrame) :
             noms = []
             for i in range(self.nb_observer) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift, i))
-                self.affichage_choix[i].grid(row=2*i+2, column=1)
+                self.affichage_choix[i].grid(row=2*i+2, column=1, rowspan=2, sticky="n", padx=20)
                 noms.append(self.affichage_choix[i].chairlift.nom)
 
             self.graph = GraphCompare(self, self.creer_df_donnee(), noms)
-            self.graph.grid(row=0, column=2, rowspan=2*self.nb_observer+1, sticky="nsew")
+            self.graph.grid(row=0, column=2, rowspan=2*self.nb_observer+2, sticky="nsew")
 
             self.bouton_exporter = ctk.CTkButton(self, text="Exporter le DataFrame", command=self.quand_exporter)
-            self.bouton_exporter.grid(row=2*self.nb_observer+1, column=2, sticky="ns", pady=(10,15), padx=10)
+            self.bouton_exporter.grid(row=2*self.nb_observer+3, column=2, sticky="ns", pady=(10,15), padx=10)
       
         else : 
             messagebox.showerror("Erreur ", f"Choisir au moins {self.nb_observer} remontées pour les comparer")
@@ -363,7 +366,8 @@ class PageComparer(ctk.CTkFrame) :
         
         try :
             df_exporter = self.creer_df_donnee()
-            df_exporter.to_csv(chemin_exporter)
+            print(df_exporter)
+            df_exporter.to_csv(chemin_exporter, index=False)
             messagebox.showinfo(title="Reussite", message=f"Fichier a été exporté à : {chemin_exporter}")
         except Exception as erreur:
             messagebox.showerror("Erreur d'exportation", f"Erreur inattendue : {erreur}")
@@ -374,7 +378,7 @@ class PageComparer(ctk.CTkFrame) :
             try :
                 self.importer()
                 if self.est_donnee_importee :
-                    messagebox.showinfo(title="Réussite", message=f"Le fichier suivant a bien été importé \n {self.chemin_importer} \n Certaines données peuvent avoir été supprimées pour le bon fonctionnement du comparateur")
+                    messagebox.showinfo(title="Réussite", message=f"Le fichier suivant a bien été importé :\n {self.chemin_importer} \nCertaines données peuvent avoir été supprimées pour le bon fonctionnement du comparateur")
                     for choix in self.choix:
                         choix.radio_button_csv.configure(state="normal")
                         choix.df = self.df_csv

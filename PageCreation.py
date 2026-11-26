@@ -387,7 +387,7 @@ class PageCreation(ctk.CTkFrame) :
         nom = self.sliders.get_entry_nom()
 
         if len(nom) > 0 :          
-            self.master.ajouter_chairlift(self.chairlift)
+            self.master.ajouter_chairlift(self.__chairlift)
             self.__chairlift.definirNom(nom)
             self.master.changer_page(Accueil)
         else :
