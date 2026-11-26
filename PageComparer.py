@@ -168,7 +168,7 @@ class AfficherSelection(ctk.CTkFrame) :
 
     def creer_widgets(self) :
         self.label_nom = ctk.CTkLabel(self, text=self.chairlift.nom, font=("Arial", 20, "bold"), text_color=COULEURS[self.indice])
-        self.label_nom.grid(row=0, column=0)
+        self.label_nom.grid(row=0, column=0, pady=(20,0))
 
         self.label_vitesse = ctk.CTkLabel(self, text=f"\u00B7 Vitesse : {self.chairlift.obtenirVitesse()} m/s")
         self.label_vitesse.grid(row=1, column=0)
@@ -302,14 +302,16 @@ class PageComparer(ctk.CTkFrame) :
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=3)
 
-        for i in range(2*self.nb_observer+3) :
-            self.grid_rowconfigure(i, weight=0)
-        #self.grid_rowconfigure(2*self.nb_observer+2, weight=1)
+        for i in range(self.nb_observer) :
+            self.grid_rowconfigure(i, weight=1)
+        self.grid_rowconfigure(self.nb_observer+1, weight=0)
 
     
     def creer_widgets(self) :
+        self.frame_choix = ctk.CTkFrame(self, fg_color="transparent")
+        self.frame_choix.grid(row=0, column=0, rowspan=self.nb_observer, padx=20, pady=10, sticky="nsew")
         #Bouton importer 
-        frame_coin_gauche = ctk.CTkFrame(self, fg_color="transparent")
+        frame_coin_gauche = ctk.CTkFrame(self.frame_choix, fg_color="transparent")
         frame_coin_gauche.grid(row=0, column= 0, sticky="nsew")
 
         image_accueil = ctk.CTkImage(light_image=Image.open("maison.png"), size=(17,17))
@@ -320,14 +322,14 @@ class PageComparer(ctk.CTkFrame) :
         self.bouton_donnee.grid(row=0, column=1, sticky="ew", pady=5, padx=(5,10))
 
         for i in range(self.nb_observer) :
-            self.choix.append(SelectionLift(self, self.df_csv))
+            self.choix.append(SelectionLift(self.frame_choix, self.df_csv))
             self.choix[i].grid(row=2*(i+1), column=0, sticky="nsew")
 
         for i in range(self.nb_observer) :
-            label_lift = ctk.CTkLabel(self, text= f"Choix #{i+1}", font=("Arial", 15, "bold"), text_color=COULEURS[i])
+            label_lift = ctk.CTkLabel(self.frame_choix, text= f"Choix #{i+1}", font=("Arial", 15, "bold"), text_color=COULEURS[i])
             label_lift.grid(row=(2*i)+1, column=0, sticky="nsew")
 
-        self.bouton_comparer = ctk.CTkButton(self, text="Comparer", command=self.quand_comparer)
+        self.bouton_comparer = ctk.CTkButton(self.frame_choix, text="Comparer", command=self.quand_comparer)
         self.bouton_comparer.grid(row=2*self.nb_observer+1, column=0, sticky="ns", pady=(15,3), padx=10)
 
     def quand_accueil(self) :
@@ -342,14 +344,14 @@ class PageComparer(ctk.CTkFrame) :
             noms = []
             for i in range(self.nb_observer) :
                 self.affichage_choix.append(AfficherSelection(self, self.choix[i].chairlift, i))
-                self.affichage_choix[i].grid(row=2*i+2, column=1, rowspan=2, sticky="n", padx=20)
+                self.affichage_choix[i].grid(row=i, column=1, sticky="nsew", padx=20, pady=10)
                 noms.append(self.affichage_choix[i].chairlift.nom)
 
             self.graph = GraphCompare(self, self.creer_df_donnee(), noms)
-            self.graph.grid(row=0, column=2, rowspan=2*self.nb_observer+2, sticky="nsew")
+            self.graph.grid(row=0, column=2, rowspan=self.nb_observer, sticky="nsew")
 
             self.bouton_exporter = ctk.CTkButton(self, text="Exporter le DataFrame", command=self.quand_exporter)
-            self.bouton_exporter.grid(row=2*self.nb_observer+3, column=2, sticky="ns", pady=(10,15), padx=10)
+            self.bouton_exporter.grid(row=self.nb_observer+1, column=0, sticky="ns", pady=(10,15), padx=10)
       
         else : 
             messagebox.showerror("Erreur ", f"Choisir au moins {self.nb_observer} remontées pour les comparer")

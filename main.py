@@ -40,11 +40,7 @@ class MainApp(ctk.CTk) :
         self.detruire_frame()
 
         self.page_courante = choix(self)
-        
-        if choix == Accueil :
-            self.page_courante.pack(fill="both", expand=True)
-        else :
-            self.page_courante.pack(fill="both")
+        self.page_courante.pack(fill="both", expand=True)
 
     def get_chairlifts(self) :
         return self.chairlifts_cree
