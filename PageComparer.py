@@ -311,6 +311,7 @@ class PageComparer(ctk.CTkFrame) :
         frame_coin_gauche.grid(row=0, column= 0, sticky="nsew")
         frame_coin_gauche.grid_columnconfigure(0, weight=0)
         frame_coin_gauche.grid_columnconfigure(1, weight=1)
+        frame_coin_gauche.grid_columnconfigure(2, weight=2)
 
         image_accueil = ctk.CTkImage(light_image=Image.open("maison.png"), size=(17,17))
         self.bouton_accueil = ctk.CTkButton(frame_coin_gauche, image=image_accueil, text="", fg_color="transparent", hover=False, command=self.quand_accueil, width=30, height=30,)

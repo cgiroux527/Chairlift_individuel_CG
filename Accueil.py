@@ -34,7 +34,6 @@ class Accueil(ctk.CTkFrame) :
             self.grid_rowconfigure(i, weight=1)
 
     def quand_option_nb(self, choix) :
-        self.nb_est_choisi = True
         nb = int(choix)
         if nb >=2 and nb <= 4 :
             self.nb_lift = int(choix)
@@ -49,9 +48,6 @@ class Accueil(ctk.CTkFrame) :
             return 2
 
     def quand_comparer(self) :
-        if self.nb_est_choisi :
             self.parent.afficher_comparer()
-        else :
-            messagebox.showwarning(title="", message="Choisir le nombre de remontées")
 
 
