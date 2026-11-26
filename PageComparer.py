@@ -195,46 +195,74 @@ class AfficherSelection(ctk.CTkFrame) :
 COULEURS = ["red", "blue", "green", "yellow"]
 
 COLONNES = ["Vitesse", "Taille chaise", "Longueur câble", "Temps trajet", "Capacité"]
-BORNES = dict(zip(COLONNES, [[1,10], [1, 10], [1, 9000], [1, 1500], [1, 3000]])) #Trouvé avec les maximums du csv et en faisant des tests de création
+BORNES = dict(zip(COLONNES, [[1,10], [1, 10], [1, 9000], [1, 1500], [1, 3500]])) #Trouvé avec les maximums du csv et en faisant des tests de création
 
-class GraphCompare(Frame) :
+class GraphCompare(ctk.CTkFrame) :
     def __init__(self, parent, df, noms) :
-        super().__init__(parent)
+        super().__init__(parent, fg_color="transparent")
         self.df_donnee = df
         self.noms = noms
 
+        self.categories = list(self.df_donnee)
+        self.normalisee = self.normaliser_donnees()
+
+        self.creer_widgets()
+
+    def creer_widgets(self) :
+        #creer la tabview et placer les deux dedans 
+        self.tabs_graphs = ctk.CTkTabview(self)
+        self.tabs_graphs.grid(padx=20, pady=20)
+
+        self.tabs_graphs.add("1 - Barres") 
+        self.tabs_graphs.add("2 - Radar")  
+        self.tabs_graphs.set("2 - Radar")  
+
+        self.creer_graphe_bar()
         self.creer_graphe_etoile()
+
+    def creer_graphe_bar(self) :
+        figure = Figure(figsize=(7, 5))
+        
+        canvas = FigureCanvasTkAgg(figure, master=self.tabs_graphs.tab("1 - Barres"))
+        canvas.get_tk_widget().pack(fill="both", expand=True)
+        
+        graph = figure.add_subplot(111)
+
+        complet = graph.grouped_bar(self.normalisee, group_spacing=1, tick_labels=self.noms, labels=COLONNES)
+        graph.legend()
+        for conteneur in complet.bar_containers:
+            graph.bar_label(conteneur, padding=3, fmt="%.2f")
+        
+        graph.set_ylim(0, 13)
+
 
     def creer_graphe_etoile(self) :
 
-        self.categories = list(self.df_donnee)
-        self.N = len(self.categories)
+        N = len(self.categories)
 
-        self.angles = [n / float(self.N) * 2 * pi for n in range(self.N)]
-        self.angles += self.angles[:1]
+        angles = [n / float(N) * 2 * pi for n in range(N)]
+        angles += angles[:1]
 
-        self.figure = Figure(figsize=(7, 5))
+        figure = Figure(figsize=(7, 5))
         
-        self.canvas = FigureCanvasTkAgg(self.figure, master=self)
-        self.canvas.get_tk_widget().pack(fill="both", expand=True)
+        canvas = FigureCanvasTkAgg(figure, master=self.tabs_graphs.tab("2 - Radar"))
+        canvas.get_tk_widget().pack(fill="both", expand=True)
         
-        self.graph = self.figure.add_subplot(111, polar=True)
-        self.graph.set_theta_offset(pi / 2)
-        self.graph.set_theta_direction(-1)
+        graph = figure.add_subplot(111, polar=True)
+        graph.set_theta_offset(pi / 2)
+        graph.set_theta_direction(-1)
 
-        self.graph.set_xticks(self.angles[:-1], self.categories)
-        self.graph.set_rlabel_position(0)
-        self.graph.set_yticks([2,4,6,8,10], ["2","4","6","8","10"], color="grey", size=7)
-        self.graph.set_ylim(0,10)
+        graph.set_xticks(angles[:-1], self.categories)
+        graph.set_rlabel_position(0)
+        graph.set_yticks([2,4,6,8,10], ["2","4","6","8","10"], color="grey", size=7)
+        graph.set_ylim(0,13)
 
-        normalisee = self.normaliser_donnees()
         for i in range(len(self.df_donnee)) :
-            valeurs = normalisee.iloc[i].values.flatten().tolist()
+            valeurs = self.normalisee.iloc[i].values.flatten().tolist()
             #Fermer la ligne sur le graphique en ajoutant la valeur de départ
             valeurs += valeurs[:1]
-            nom = self.noms[i]
-            self.graph.plot(self.angles, valeurs, linewidth=1, linestyle='solid', label=nom)
-            self.graph.fill(self.angles, valeurs, COULEURS[i], alpha=0.1)
+            graph.plot(angles, valeurs, linewidth=1, linestyle='solid') 
+            graph.fill(angles, valeurs, COULEURS[i], alpha=0.1)
 
 
     def normaliser_donnees(self) :
