@@ -28,7 +28,7 @@ class Accueil(ctk.CTkFrame) :
         frame_comparer = ctk.CTkFrame(self, fg_color="transparent")
         frame_comparer.grid(row=2, column=2, padx=20, pady=20)
         #Bouton pour accéder au comparateur
-        ctk.CTkButton(frame_comparer, text="Comparateur de remontées", font=("Arial", 21), command=parent.afficher_comparer(), height=40, width= 300).grid(column=0, row=0, padx=(10,2))
+        ctk.CTkButton(frame_comparer, text="Comparateur de remontées", font=("Arial", 21), command=parent.afficher_comparer, height=40, width= 300).grid(column=0, row=0, padx=(10,2))
         self.nb_est_choisi = False
         #Option menu pour choisir le nombre de remontées à comparer
         option_nb_lift = ctk.CTkOptionMenu(frame_comparer, values=NOMBRES_LIFTS, command=self.quand_option_nb, height=40, width=65)

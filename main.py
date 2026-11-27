@@ -8,10 +8,9 @@ if __name__ == "__main__" :
     application = MainApp()
     application.mainloop()
 
-
+#TODO on dirait que ce qui est choisi dans le createur n'arrive pas a bonne chose dans comparer
 #TODO plus de fonctions???
 #TODO mettre ça dans un meilleur ordre
-#TODO condition où ils ne peuvent pas avoir le même nom
 #TODO commenter ligne 92 graph
 #TODO alignement des afficherselection
 #TODO est ce que le graph change vraiment, car pas destroy

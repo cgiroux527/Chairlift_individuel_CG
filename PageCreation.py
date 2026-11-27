@@ -79,3 +79,4 @@ class PageCreation(ctk.CTkFrame) :
                 return False
             else : 
                 continue
+        return True

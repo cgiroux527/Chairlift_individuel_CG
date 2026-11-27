@@ -18,7 +18,7 @@ class MainApp(ctk.CTk) :
         self.chairlifts_cree = []
         self.nb_lift = 2
 
-        #À l'ouverture c'est le menu principale
+        #À l'ouverture c'est le menu principal
         self.afficher_menu_principal()
 
     #Méthode appelé pour détruire la page courante avant de passer à la prochaine
@@ -54,5 +54,6 @@ class MainApp(ctk.CTk) :
     #Mettre le chairlift créé dans le créateur dans la liste 
     def ajouter_chairlift(self, chairlift):
         self.chairlifts_cree.append(chairlift)
+        
 
     
