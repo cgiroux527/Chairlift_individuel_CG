@@ -10,7 +10,6 @@ if __name__ == "__main__" :
 
 
 #TODO les prints dans la console à enlever
-#TODO separer en plus de fonctions et fichiers, UNE CLASSE PAR FICHIER
 #TODO mettre ça dans un meilleur ordre
 #TODO condition où ils ne peuvent pas avoir le même nom
 #TODO commenter ligne 308

@@ -64,7 +64,6 @@ class SelectionLift(ctk.CTkFrame) :
         if choix != "Pays" :
             #Initialiser l'attribut du choix du pays pour filtrer la suite
             self.choix_pays = choix
-            print("pays choisi : ", choix)
 
             #Ramener les autres optionMenu à leur base, car nous revenons au choix du pays, alors les autres ne sont pas choisis 
             self.choix_region = ""
@@ -85,7 +84,6 @@ class SelectionLift(ctk.CTkFrame) :
         if choix != "Region" and choix != "Choisir un pays" :
             #La suite suit la même logique que "self.quand_pays"
             self.choix_region = choix
-            print("region choisi : ", choix)
 
             self.choix_lift_csv = ""
             self.option_lift_csv.configure(values=["Choisir une region"])
@@ -99,12 +97,10 @@ class SelectionLift(ctk.CTkFrame) :
     def quand_lift_csv(self, choix) :
         if choix != "Remontee" and choix != "Choisir une region":
             self.choix_lift_csv = choix
-            print("lift du csv choisi : ", choix)
 
             #Retrouver avec Pandas le lift choisi dans l'importation
             condition_nom_lift = (self.df["name"] == self.choix_lift_csv) & (self.df["countries"] == self.choix_pays) & (self.df["regions"] == self.choix_region)
             self.df_lift_choisi = self.df[condition_nom_lift]
-            print("lift du csv choisi : ", self.df_lift_choisi)
 
             #Modifier le nom de l'instance Chairlift
             self.chairlift.nom = self.choix_lift_csv
@@ -131,7 +127,6 @@ class SelectionLift(ctk.CTkFrame) :
 
     
     def quand_choix_perso(self) :
-        print("options menu personnalisee")
         #Réinitialiser et détruire les anciennes instances pour les options provenant du CSV
         if self.option_region and self.option_pays and self.option_lift_csv :
             self.option_pays.destroy()
@@ -153,7 +148,6 @@ class SelectionLift(ctk.CTkFrame) :
         #Vérifier le choix provenant du créateur 
         if choix != "Remontee Perso" and choix != "Aucune remontee cree" :
             self.choix_lift_cree = choix
-            print("lift cree choisi : ", self.choix_lift_cree)
             #Appeler la méthode qui trouve la bonne remontée dans la liste de celles créées
             self.chairlift = self.trouver_lift_cree()
             #La remontée est maintenant choisie
@@ -164,7 +158,6 @@ class SelectionLift(ctk.CTkFrame) :
         for lift in self.chairlifts_cree :
             #Retourner l'instance de Chairlift lorsque leurs noms correspondent
             if lift.nom == self.choix_lift_cree :
-                print("Lift trouvee : ", lift.nom)
                 return lift
             else : 
                 continue

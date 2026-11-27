@@ -172,7 +172,7 @@ class Sliders(ctk.CTkFrame) :
     
     def _quand_slider_chaise(self, valeur) :
         if not self.chairlift.definirNombreDeChaise(valeur) :
-            print("erreur de limite??")
+            print("erreur de limite")
         self.text_chaise.configure(
             text=str(self.chairlift.obtenirNombreDeChaise())
         )
@@ -180,7 +180,7 @@ class Sliders(ctk.CTkFrame) :
     
     def _quand_slider_vitesse(self, valeur) :
         if not self.chairlift.definirVitesse(valeur) :
-            print("erreur de limite??")
+            print("erreur de limite")
         self.text_vitesse.configure(
             text=str(self.chairlift.obtenirVitesse()) + " m/s"
         )
@@ -188,7 +188,7 @@ class Sliders(ctk.CTkFrame) :
     
     def _quand_slider_embarque(self, valeur) :
         if not self.chairlift.definirTempsEmbarquement(valeur) :
-            print("erreur de limite??")
+            print("erreur de limite")
         self.text_embarque.configure(
             text=str(self.chairlift.obtenirTempsEmbarquement()) + " s"
         )
@@ -196,7 +196,7 @@ class Sliders(ctk.CTkFrame) :
     
     def _quand_slider_debarque(self, valeur) :
         if not self.chairlift.definirTempsDebarquement(valeur) :
-            print("erreur de limite??")
+            print("erreur de limite")
         self.text_debarque.configure(
             text=str(self.chairlift.obtenirTempsDebarquement()) + " s"
         )
@@ -204,7 +204,7 @@ class Sliders(ctk.CTkFrame) :
     
     def _quand_slider_capacite(self, valeur) :
         if not self.chairlift.definirNombreDePersonnesParChaise(valeur) :
-            print("erreur de limite??")
+            print("erreur de limite")
         self.text_capacite.configure(
             text=str(self.chairlift.obtenirNombreDePersonnesParChaise())
         )

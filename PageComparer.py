@@ -140,7 +140,6 @@ class PageComparer(ctk.CTkFrame) :
         try :
             #À l'aide de Pandas, mettre tout le DataFrame dans le CSV 
             df_exporter = self.creer_df_donnee()
-            print(df_exporter)
             df_exporter.to_csv(chemin_exporter, index=False)
             messagebox.showinfo(title="Reussite", message=f"Fichier a été exporté à : {chemin_exporter}")
         except Exception as erreur:
@@ -162,7 +161,6 @@ class PageComparer(ctk.CTkFrame) :
 
             except (OSError, ValueError, KeyError) as erreur:
                 messagebox.showerror("Erreur dans l'import", erreur)
-                print("Chargement impossible ", erreur)
 
 
     def importer(self) :   
