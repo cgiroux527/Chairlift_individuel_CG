@@ -64,9 +64,18 @@ class PageCreation(ctk.CTkFrame) :
     def _creer_lift(self) :
         nom = self.sliders.get_entry_nom()
 
-        if len(nom) > 0 :          
+        if len(nom) > 0 and self.existe_pas(nom) :          
             self.master.ajouter_chairlift(self.__chairlift)
             self.__chairlift.definirNom(nom)
             self.master.changer_page(Accueil)
-        else :
+        elif len(nom) == 0 :
             messagebox.showwarning(title="Erreur", message="Veuillez entrer un nom pour la remontée créée")
+        else :
+            messagebox.showerror(title="Erreur", message="Veuillez choisir un nouveau nom" )
+
+    def existe_pas(self, nom) :
+        for lift in self.master.get_chairlifts() :
+            if nom == lift.nom :
+                return False
+            else : 
+                continue

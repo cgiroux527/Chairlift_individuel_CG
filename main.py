@@ -9,10 +9,10 @@ if __name__ == "__main__" :
     application.mainloop()
 
 
-#TODO les prints dans la console à enlever
+#TODO plus de fonctions???
 #TODO mettre ça dans un meilleur ordre
 #TODO condition où ils ne peuvent pas avoir le même nom
-#TODO commenter ligne 308
+#TODO commenter ligne 92 graph
 #TODO alignement des afficherselection
 #TODO est ce que le graph change vraiment, car pas destroy
 #TODO enlever les selfs inutiles
